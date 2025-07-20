@@ -3,6 +3,7 @@ TARGET = build/main.out
 
 # Fichiers source
 SRC = ./univ/main.c ./platforms/Linux/glad.c
+SRCTEST = ./univ/tests.c ./platforms/Linux/glad.c
 
 # Compilateur
 CC = gcc
@@ -20,6 +21,16 @@ all: $(TARGET)
 $(TARGET): $(SRC)
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) $(SRC) -o $(TARGET) $(LDFLAGS)
+
+# Compile le test / exemple
+example: $(TARGET)
+
+# Règle de compilation
+$(TARGET): $(SRCTEST)
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) $(SRCTEST) -o $(TARGET) $(LDFLAGS)
+
+
 
 # Nettoyage
 clean:

@@ -103,6 +103,49 @@ int main(int argc, char **argv)
     // Create a simple OpenGL pipeline (program)
     unsigned int shaderProgram = SRE_CreateDefaultShaderProgram();
 
+
+    /* Triangle */
+
+    // vertices
+    float vertices_triangle[] = {
+    -0.5f, -0.5f, 0.0f,
+     0.5f, -0.5f, 0.0f,
+     0.0f,  0.5f, 0.0f
+    };
+
+    // Create VAO and VBO
+    // VAO
+    unsigned int VAO_triangle;
+    glGenVertexArrays(1, &VAO_triangle);
+    // VBO
+    unsigned int VBO_triangle;
+    glGenBuffers(1, &VBO_triangle);
+
+
+    // Bind VAO and VBO
+    // VAO
+    glBindVertexArray(VAO_triangle);
+    // VBO
+    glBindBuffer(GL_ARRAY_BUFFER, VBO_triangle);
+
+
+    // "Store" the vertices and specify its size and the starting pointer
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_triangle), vertices_triangle, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+
+    // Clean up: unbind VAO and VBO
+    // VAO
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    // VBO
+    glBindVertexArray(0);
+
+
+
+
+
+
     /* RECTANGLE */
 
     float vertices_rectangle[] = {
@@ -173,13 +216,6 @@ int main(int argc, char **argv)
             }
         }
 
-        /* Update Viewport */
-
-        int w, h;
-        SDL_GetWindowSize(mainWindow, &w, &h);
-        glViewport(0, 0, w, h);
-
-
         /* Back Ground */
 
         // OPENGL: set a grey background
@@ -193,6 +229,18 @@ int main(int argc, char **argv)
         // OPENGL: use our graphics pipeline and shaders
         glUseProgram(shaderProgram);
 
+
+        // TRIANGLE
+        // OPENGL: draw our triangle
+        glBindVertexArray(VAO_triangle);
+        glDrawArrays(GL_TRIANGLES, 0, 3); // Use this function to work ONLY with VAOs and VBOs and so without EBOs.
+
+        // SDL: render it.
+        SDL_GL_SwapWindow(mainWindow);
+        // SDL: wait 3 seconds
+        SDL_Delay(3000);
+
+
         // RECTANGLE
         // OPENGL: draw a rectangle this time
         glBindVertexArray(VAO_rectangle);
@@ -200,8 +248,8 @@ int main(int argc, char **argv)
 
         // SDL: render it.
         SDL_GL_SwapWindow(mainWindow);
-        // SDL: wait
-        SDL_Delay(8);
+        // SDL: wait 3 seconds
+        SDL_Delay(3000);
 
     }
 
@@ -212,6 +260,8 @@ int main(int argc, char **argv)
 
 
     // Proper exit...
+    glDeleteVertexArrays(1, &VAO_triangle);
+    glDeleteBuffers(1, &VBO_triangle);
     glDeleteVertexArrays(1, &VAO_rectangle);
     glDeleteBuffers(1, &VBO_rectangle);
     glDeleteBuffers(1, &EBO_rectangle);

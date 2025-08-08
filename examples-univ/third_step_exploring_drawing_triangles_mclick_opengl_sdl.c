@@ -125,6 +125,7 @@ int main(int argc, char **argv)
      0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f
     };
 
+    // 
     unsigned int nbr_of_indices = 3;
     unsigned int indices[3*20] = {  // note that we start from 0!
     0, 1, 2
@@ -166,6 +167,15 @@ int main(int argc, char **argv)
 
     // MAIN LOOP
     int w, h;
+    float mouseX, mouseY;
+
+    float normX = 0.0f;
+    float normY = 0.0f;
+
+    int nbr_of_new_vertices = 0;
+    uint8_t nbr_of_new_indices = 0;
+    float new_vertices[6*3];
+    float new_indices[3];
 
     uint8_t run = 1;
     SDL_Event ev;
@@ -178,14 +188,98 @@ int main(int argc, char **argv)
                 run = 0;
             }
 
+            // Test if we already have 3 new vertices
+            if (nbr_of_new_indices == 3)
+            {
+                // add the new vertices to the vertex buffer
+                printf("New vertices:\n"); // DEBUG
+                for (unsigned int i = 0; i != nbr_of_new_vertices; i += 6)
+                {
+                    // DEBUG
+                    printf("Vertex n°%u: %f, %f, %f of color red: %f, %f, %f\n", (i+1), new_vertices[i], new_vertices[i+1], new_vertices[i+2], new_vertices[i+3], new_vertices[i+4], new_vertices[i+5]);
+                    // DEBUG
+
+                    vertices[nbr_of_vertices + i + 0] = new_vertices[i + 0];
+                    vertices[nbr_of_vertices + i + 1] = new_vertices[i + 1];
+                    vertices[nbr_of_vertices + i + 2] = new_vertices[i + 2];
+
+                    vertices[nbr_of_vertices + i + 3] = new_vertices[i + 3];
+                    vertices[nbr_of_vertices + i + 4] = new_vertices[i + 4];
+                    vertices[nbr_of_vertices + i + 5] = new_vertices[i + 5];
+                }
+                nbr_of_vertices += 6*3;
 
 
+                // add the new indices to the indice buffer
+                indices[nbr_of_indices + 0] = new_indices[0];
+                indices[nbr_of_indices + 1] = new_indices[1];
+                indices[nbr_of_indices + 2] = new_indices[2];
+                nbr_of_indices += 3;
+
+
+                // Update OpenGL
+                glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+                glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+                
+                // DEBUG
+
+                printf("\n\nAll of the vertices:\n");
+                for (unsigned int i = 0; i != nbr_of_vertices; i += 6)
+                {
+                    printf("Vertex n°%u: %f, %f, %f of color red: %f, %f, %f\n", (i+1), vertices[i], vertices[i+1], vertices[i+2], vertices[i+3], vertices[i+4], vertices[i+5]);
+                }
+
+                printf("\n\nAll of the indices:\n");
+                for (unsigned int i = 0; i != nbr_of_indices; i++)
+                {
+                    printf("Indice n°%u: %d\n", i, indices[i]);
+                }
+                
+                // DEBUG
+
+
+                // reset the check
+                nbr_of_new_vertices = 0;
+                nbr_of_new_indices = 0;
+            }
+
+            if (ev.type == SDL_EVENT_MOUSE_BUTTON_DOWN)
+            {
+                if (ev.button.button == SDL_BUTTON_LEFT)
+                {
+                    // Get the current position of the mouse
+                    SDL_GetMouseState(&mouseX, &mouseY);
+
+                    normX = (mouseX / w) * 2.0f - 1.0f;
+                    normY = 1.0f - (mouseY / h) * 2.0f;
+
+                    // Append the new vertex to a temp buffer
+
+                    // New vertex
+                    // x   y   z      r   g   b
+                    new_vertices[nbr_of_new_vertices + 0] = normX;
+                    new_vertices[nbr_of_new_vertices + 1] = normY;
+                    new_vertices[nbr_of_new_vertices + 2] = 0.0f;
+
+                    new_vertices[nbr_of_new_vertices + 3] = 1.0f;
+                    new_vertices[nbr_of_new_vertices + 4] = 0.0f;
+                    new_vertices[nbr_of_new_vertices + 5] = 0.0f;
+
+                    nbr_of_new_vertices += 6;
+
+                    // New indice for that vertex
+                    new_indices[nbr_of_new_indices] = nbr_of_indices + nbr_of_new_indices;
+                    nbr_of_new_indices++;
+                }
+            }
+        }
 
         /* Update Viewport */
+
         
         SDL_GetWindowSize(mainWindow, &w, &h);
         glViewport(0, 0, w, h);
-
 
 
         /* Back Ground */
@@ -194,7 +288,7 @@ int main(int argc, char **argv)
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        
+
         /* Our Shapes */
 
         // graphics pipeline (shader program)

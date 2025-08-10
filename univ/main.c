@@ -1,15 +1,5 @@
-// PROGRAMMING, REMOVED WHEN PUSHING
-#define PLATEFORM_LINUX 1
-// PROGRAMMING, REMOVED WHEN PUSHING
+#include "./univ.h"
 
-
-#ifdef PLATEFORM_LINUX
-    #undef PLATEFORM_WINDOWS
-    #include "../platforms/Linux/linux.c"
-#elif PLATEFORM_WINDOWS
-    #undef PLATEFORM_LINUX
-    #include "../plateforms/windows/windows.c"
-#endif
 
 
 int main(int argc, char **argv)

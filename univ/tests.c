@@ -112,7 +112,7 @@ int main(int argc, char **argv)
      0.0f,  0.8165f, 0.0f,   1.0f, 0.0f, 0.0f,
     -0.5f, -0.2887f, 0.5f,   0.0f, 1.0f, 0.0f,
      0.5f, -0.2887f, 0.5f,   0.0f, 0.0f, 1.0f,
-     0.0f, -0.2887f, -0.5f,  1.0f, 1.0f, 0.0f
+     0.0f, -0.2887f,-0.5f,   1.0f, 1.0f, 0.0f
     };
 
     unsigned int nbr_of_indices = 12;
@@ -159,50 +159,13 @@ int main(int argc, char **argv)
     // CGLM: 3D !!
 
     // create a 3D Projection matrix object
-    SRE_Projection projection_context;
-    projection_context.update = _SRE_Projection_do_Set_Settings;
+    SRE_Projection *projection_context = SRE_Create_Projection_Object(45.0f, 800.0f, 600.0f, 0.1f, 100.0f);
 
     // create a 3D Camera matrix object
-    SRE_View camera;
-    camera.update = _SRE_View_do_Place_At;
+    SRE_View *camera = SRE_Create_View_Object(0.0f, 0.0f, 3.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
 
     // create a 3D Tetrahedron matrix object
-    SRE_Model tetrahedron_model;
-    tetrahedron_model.update = _SRE_Model_do_Place_At;
-
-
-    // set the default parameters for each 3D object matrix
-    // Projection
-    projection_context.fov = glm_rad(45.0f);
-    projection_context.widthScreen = 800;
-    projection_context.hightScreen = 600;
-    projection_context.close = 0.1f;
-    projection_context.far = 100.0f;
-    projection_context.update(&projection_context);
-
-    // Camera (View)
-    camera.xPos = 0.0f;
-    camera.yPos = 0.0f;
-    camera.zPos = 3.0f;
-    camera.xLook = 0.0f;
-    camera.yLook = 0.0f;
-    camera.zLook = 0.0f;
-    camera.xTop = 0.0f;
-    camera.yTop = 1.0f;
-    camera.zTop = 0.0f;
-    camera.update(&camera);
-
-    // Tetrahedron Model
-    tetrahedron_model.xPos = 0.0f;
-    tetrahedron_model.yPos = 0.0f;
-    tetrahedron_model.zPos = 0.0f;
-    tetrahedron_model.xRotAngle = 0.0f;
-    tetrahedron_model.yRotAngle = 0.0f;
-    tetrahedron_model.zRotAngle = 0.0f;
-    tetrahedron_model.xScale = 1.0f;
-    tetrahedron_model.yScale = 1.0f;
-    tetrahedron_model.zScale = 1.0f;
-    tetrahedron_model.update(&tetrahedron_model);
+    SRE_Model *tetrahedron_model = SRE_Create_Model_Object(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
 
 
     // Get the uMVP uniform from our default OpenGL 3D Shader Program
@@ -241,9 +204,9 @@ int main(int argc, char **argv)
         
         SDL_GetWindowSize(mainWindow, &w, &h);
         glViewport(0, 0, w, h);
-        projection_context.widthScreen = (float)w;
-        projection_context.hightScreen = (float)h;
-        projection_context.update(&projection_context);
+        projection_context->widthScreen = (float)w;
+        projection_context->hightScreen = (float)h;
+        projection_context->update(projection_context);
         //glm_perspective(glm_rad(45.0f), (float)w / (float)h, 0.1f, 100.0f, projection);
 
 
@@ -251,27 +214,27 @@ int main(int argc, char **argv)
         if (keys[SDL_SCANCODE_W])
         {
             // cam forward (zoom in)
-            camera.zPos -= 0.05f;
-            camera.update(&camera);
+            camera->zPos -= 0.05f;
+            camera->update(camera);
         }
         if (keys[SDL_SCANCODE_S])
         {
             // cam backward (zoom out)
-            camera.zPos += 0.05f;
-            camera.update(&camera);
+            camera->zPos += 0.05f;
+            camera->update(camera);
         }
 
 
         // Rotating triangle
         time = SDL_GetTicks() / 1000.0f;
 
-        tetrahedron_model.yRotAngle = time * 100.0f;
-        tetrahedron_model.update(&tetrahedron_model);
+        tetrahedron_model->yRotAngle = time * 100.0f;
+        tetrahedron_model->update(tetrahedron_model);
         //glm_mat4_identity(model); // reset the model matrix
         //glm_rotate(model, time, (vec3){0.0f, 1.0f, 0.0f}); // apply rotation
 
         // update the whole 3D matrix
-        SRE_Update_Transformation_Matrix(mvpLoc, tetrahedron_model, camera, projection_context);
+        SRE_Update_Transformation_Matrix(mvpLoc, *tetrahedron_model, *camera, *projection_context);
 
 
 

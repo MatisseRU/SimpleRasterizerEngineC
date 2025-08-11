@@ -244,6 +244,78 @@ void _SRE_Model_do_Place_At(SRE_Model *self)
     glm_translate(self->model_matrix, (vec3){self->xPos, self->yPos, self->zPos});
 }
 
+// constructors
+SRE_Projection *SRE_Create_Projection_Object(float fov_degrees, float width_screen, float hight_screen, float close_distance, float far_distance)
+{
+    SRE_Projection* projection = malloc(sizeof(SRE_Projection));
+    if(projection == NULL)
+    {
+        fprintf(stderr, "Failed to allocate memory for object\n");
+        return NULL;
+    }
+
+    projection->update = _SRE_Projection_do_Set_Settings;
+
+    projection->fov = glm_rad(fov_degrees);
+    projection->widthScreen = width_screen;
+    projection->hightScreen = hight_screen;
+    projection->close = close_distance;
+    projection->far = far_distance;
+    projection->update(projection);
+
+    return projection;
+}
+SRE_View *SRE_Create_View_Object(float x_pos, float y_pos, float z_pos, float x_look, float y_look, float z_look, float x_top, float y_top, float z_top)
+{
+    SRE_View* view = malloc(sizeof(SRE_View));
+    if(view == NULL)
+    {
+        fprintf(stderr, "Failed to allocate memory for object\n");
+        return NULL;
+    }
+
+    view->update = _SRE_View_do_Place_At;
+
+    view->xPos = x_pos;
+    view->yPos = y_pos;
+    view->zPos = z_pos;
+    view->xLook = x_look;
+    view->yLook = y_look;
+    view->zLook = z_look;
+    view->xTop = x_top;
+    view->yTop = y_top;
+    view->zTop = z_top;
+    view->update(view);
+
+    return view;
+}
+SRE_Model *SRE_Create_Model_Object(float x_pos, float y_pos, float z_pos, float x_rotation_angle_degrees, float y_rotation_angle_degrees, float z_rotation_angle_degrees, float x_scale, float y_scale, float z_scale)
+{
+    SRE_Model* model = malloc(sizeof(SRE_Model));
+    if(model == NULL)
+    {
+        fprintf(stderr, "Failed to allocate memory for object\n");
+        return NULL;
+    }
+
+    model->update = _SRE_Model_do_Place_At;
+
+    model->xPos = x_pos;
+    model->yPos = y_pos;
+    model->zPos = z_pos;
+    model->xRotAngle = x_rotation_angle_degrees;
+    model->yRotAngle = y_rotation_angle_degrees;
+    model->zRotAngle = z_rotation_angle_degrees;
+    model->xScale = x_scale;
+    model->yScale = y_scale;
+    model->zScale = z_scale;
+    model->update(model);
+
+    return model;
+}
+
+
+
 // 3D related
 int SRE_Get_Uniform_TransformationMatrix_From_ShaderProgram(unsigned int shaderProgram)
 {

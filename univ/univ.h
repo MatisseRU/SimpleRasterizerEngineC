@@ -1,5 +1,23 @@
+/*
+    How does this engine works ?
+    It is designed to be modular:
+        -ring 0: OpenGL stuff (low level)
+        -ring 1: Game Logic and OOP Objects (high level, designed to link your game and 3D operations easily, maybe GUI soon ?)
+        -ring 2: Your game / your 2D/3D animation stuff / ressource editor
+*/
+
+/* plateform independent includes */
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+#include <SDL3/SDL.h>
+#include "./glad.h"
+#include <cglm/cglm.h>
+#include <stdio.h>
+
+
 // PROGRAMMING, REMOVED WHEN PUSHING
-#define PLATEFORM_LINUX 1
+//#define PLATEFORM_LINUX 1
+//#define PLATEFORM_WINDOWS 1
 // PROGRAMMING, REMOVED WHEN PUSHING
 
 
@@ -8,11 +26,11 @@
     #include "../platforms/Linux/linux.c"
 #elif PLATEFORM_WINDOWS
     #undef PLATEFORM_LINUX
-    #include "../plateforms/windows/windows.c"
+    #include "../platforms/Windows/windows.c"
 #endif
 
 
-
+// ring 0
 /* OpenGL Shaders */
 
 unsigned int SRE_CreateDefaultShaderProgram(void)
@@ -181,8 +199,21 @@ unsigned int SRE_3D_CreateDefaultCornerColoredShaderProgram(void)
     return shaderProgram;
 }
 
+// 3D related
+int SRE_Get_Uniform_TransformationMatrix_From_ShaderProgram(unsigned int shaderProgram)
+{
+    return glGetUniformLocation(shaderProgram, "uMVP");
+}
+void SRE_Update_Transformation_Matrix(int mvpLoc, SRE_Model m, SRE_View v, SRE_Projection p)
+{
+    mat4 mvp;
+    glm_mat4_mulN((mat4 *[]){&p.projection_matrix, &v.view_matrix, &m.model_matrix}, 3, mvp);
+    glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, (float *)mvp);
+}
 
 
+
+// ring 1
 /* Custom data types and "classes" */
 
 // the rendering parameters
@@ -218,6 +249,7 @@ typedef struct SRE_Model
 
     void (*update)(struct SRE_Model *self);
 } SRE_Model;
+
 
 /* methods */
 
@@ -312,19 +344,5 @@ SRE_Model *SRE_Create_Model_Object(float x_pos, float y_pos, float z_pos, float 
     model->update(model);
 
     return model;
-}
-
-
-
-// 3D related
-int SRE_Get_Uniform_TransformationMatrix_From_ShaderProgram(unsigned int shaderProgram)
-{
-    return glGetUniformLocation(shaderProgram, "uMVP");
-}
-void SRE_Update_Transformation_Matrix(int mvpLoc, SRE_Model m, SRE_View v, SRE_Projection p)
-{
-    mat4 mvp;
-    glm_mat4_mulN((mat4 *[]){&p.projection_matrix, &v.view_matrix, &m.model_matrix}, 3, mvp);
-    glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, (float *)mvp);
 }
 

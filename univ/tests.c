@@ -207,7 +207,6 @@ int main(int argc, char **argv)
         projection_context->widthScreen = (float)w;
         projection_context->hightScreen = (float)h;
         projection_context->update(projection_context);
-        //glm_perspective(glm_rad(45.0f), (float)w / (float)h, 0.1f, 100.0f, projection);
 
 
         // check camera movements
@@ -230,8 +229,6 @@ int main(int argc, char **argv)
 
         tetrahedron_model->yRotAngle = time * 100.0f;
         tetrahedron_model->update(tetrahedron_model);
-        //glm_mat4_identity(model); // reset the model matrix
-        //glm_rotate(model, time, (vec3){0.0f, 1.0f, 0.0f}); // apply rotation
 
         // update the whole 3D matrix
         SRE_Update_Transformation_Matrix(mvpLoc, *tetrahedron_model, *camera, *projection_context);

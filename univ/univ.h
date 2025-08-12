@@ -3,7 +3,7 @@
     It is designed to be modular:
         -ring 0: OpenGL stuff (low level)
         -ring 1: Game Logic and OOP Objects (high level, designed to link your game and 3D operations easily, maybe GUI soon ?)
-        -ring 2: Your game / your 2D/3D animation stuff / ressource editor
+        -ring 2: Your game / your 2D/3D animation stuff / ressource editor which rely on ring 0 through ring 1 and also able to access ring 0 on its own.
 */
 
 /* plateform independent includes */

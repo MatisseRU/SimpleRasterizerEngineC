@@ -179,6 +179,7 @@ int main(int argc, char **argv)
     int w, h;
 
     glBindVertexArray(VAO);
+    glUseProgram(shaderProgram);
 
     SDL_Event ev;
     const uint8_t *keys = SDL_GetKeyboardState(NULL);
@@ -193,9 +194,6 @@ int main(int argc, char **argv)
                 run = 0;
             }
         }
-
-        // Select our OpenGL Shader Program
-        glUseProgram(shaderProgram);
 
 
 
@@ -263,6 +261,9 @@ int main(int argc, char **argv)
 
 
     // Proper exit...
+    free(tetrahedron_model);
+    free(camera);
+    free(projection_context);
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteProgram(shaderProgram);

@@ -55,6 +55,20 @@ int main(int argc, char **argv)
         return -1;
     }
 
+    if (!SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1))
+    {
+        fprintf(stderr, "Failed at SDL_GL_SetAttribute multisamplebuffers: \n%s\n", SDL_GetError());
+        SDL_Quit();
+        return -1;
+    }
+
+    if (!SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 2))
+    {
+        fprintf(stderr, "Failed at SDL_GL_SetAttribute multisamples: \n%s\n", SDL_GetError());
+        SDL_Quit();
+        return -1;
+    }
+
 
 
     // SDL
@@ -82,6 +96,7 @@ int main(int argc, char **argv)
 
     gladLoadGLLoader(SDL_GL_GetProcAddress);
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_MULTISAMPLE);
 
 
     // Infos about the graphics card driver...
@@ -90,6 +105,10 @@ int main(int argc, char **argv)
     int nrAttributes;
     glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
     printf("Your graphics card can handle %d vertex attributes\n", nrAttributes);
+
+    int maxSamples;
+    glGetIntegerv(GL_MAX_SAMPLES, &maxSamples);
+    printf("Max MSAA samples: %d\n", maxSamples);
 
 
 
@@ -112,12 +131,12 @@ int main(int argc, char **argv)
         -1.0f, -1.0f, -1.0f,   1.0f, 0.0f, 0.0f,
          1.0f, -1.0f, -1.0f,   0.0f, 1.0f, 0.0f,
          1.0f,  1.0f, -1.0f,   0.0f, 0.0f, 1.0f,
-        -1.0f,  1.0f, -1.0f,   0.0f, 0.0f, 0.0f,
+        -1.0f,  1.0f, -1.0f,   1.0f, 1.0f, 1.0f,
 
         -1.0f, -1.0f,  1.0f,   1.0f, 0.0f, 0.0f,
          1.0f, -1.0f,  1.0f,   0.0f, 1.0f, 0.0f,
          1.0f,  1.0f,  1.0f,   0.0f, 0.0f, 1.0f,
-        -1.0f,  1.0f,  1.0f,   0.0f, 0.0f, 0.0f
+        -1.0f,  1.0f,  1.0f,   1.0f, 1.0f, 1.0f
     };
 
     unsigned int nbr_of_indices = 6*6;
@@ -171,7 +190,7 @@ int main(int argc, char **argv)
     SRE_View *camera = SRE_Create_View_Object(0.0f, 0.0f, 3.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
 
     // create a 3D Tetrahedron matrix object
-    SRE_Model *tetrahedron_model = SRE_Create_Model_Object(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
+    SRE_Model *cube_model = SRE_Create_Model_Object(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
 
 
     // Get the uMVP uniform from our default OpenGL 3D Shader Program
@@ -189,9 +208,16 @@ int main(int argc, char **argv)
     SDL_Event ev;
     const uint8_t *keys = SDL_GetKeyboardState(NULL);
 
-    uint8_t run = 1;    
+    const int targetFrameTime = 1000 / 30; // 16 ms
+    uint64_t elapsed, frameStart;
+
+    uint8_t run = 1;
     while (run)
     {
+        frameStart = SDL_GetTicks();
+
+
+
         while (SDL_PollEvent(&ev) != 0)
         {
             if (ev.type == SDL_EVENT_QUIT)
@@ -231,27 +257,27 @@ int main(int argc, char **argv)
         // check model movements
         if (keys[SDL_SCANCODE_LEFT])
         {
-            tetrahedron_model->yRotAngle += 1.0f;
-            tetrahedron_model->update(tetrahedron_model);
+            cube_model->yRotAngle += 1.0f;
+            cube_model->update(cube_model);
         }
         if (keys[SDL_SCANCODE_RIGHT])
         {
-            tetrahedron_model->yRotAngle -= 1.0f;
-            tetrahedron_model->update(tetrahedron_model);
+            cube_model->yRotAngle -= 1.0f;
+            cube_model->update(cube_model);
         }
         if (keys[SDL_SCANCODE_UP])
         {
-            tetrahedron_model->xRotAngle += 1.0f;
-            tetrahedron_model->update(tetrahedron_model);
+            cube_model->xRotAngle += 1.0f;
+            cube_model->update(cube_model);
         }
         if (keys[SDL_SCANCODE_DOWN])
         {
-            tetrahedron_model->xRotAngle -= 1.0f;
-            tetrahedron_model->update(tetrahedron_model);
+            cube_model->xRotAngle -= 1.0f;
+            cube_model->update(cube_model);
         }
 
         // update the whole 3D matrix
-        SRE_Update_Transformation_Matrix(mvpLoc, *tetrahedron_model, *camera, *projection_context);
+        SRE_Update_Transformation_Matrix(mvpLoc, *cube_model, *camera, *projection_context);
 
 
 
@@ -273,7 +299,11 @@ int main(int argc, char **argv)
 
 
         // SDL: wait
-        SDL_Delay(16);
+        elapsed = SDL_GetTicks() - frameStart;
+        if (elapsed < targetFrameTime)
+        {
+            SDL_Delay(targetFrameTime - elapsed);
+        }
     }
 
     // MAIN LOOP
@@ -283,7 +313,7 @@ int main(int argc, char **argv)
 
 
     // Proper exit...
-    free(tetrahedron_model);
+    free(cube_model);
     free(camera);
     free(projection_context);
     glDeleteVertexArrays(1, &VAO);

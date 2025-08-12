@@ -204,13 +204,6 @@ int SRE_Get_Uniform_TransformationMatrix_From_ShaderProgram(unsigned int shaderP
 {
     return glGetUniformLocation(shaderProgram, "uMVP");
 }
-void SRE_Update_Transformation_Matrix(int mvpLoc, SRE_Model m, SRE_View v, SRE_Projection p)
-{
-    mat4 mvp;
-    glm_mat4_mulN((mat4 *[]){&p.projection_matrix, &v.view_matrix, &m.model_matrix}, 3, mvp);
-    glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, (float *)mvp);
-}
-
 
 
 // ring 1
@@ -252,6 +245,14 @@ typedef struct SRE_Model
 
 
 /* methods */
+
+void SRE_Update_Transformation_Matrix(int mvpLoc, SRE_Model m, SRE_View v, SRE_Projection p)
+{
+    mat4 mvp;
+    glm_mat4_mulN((mat4 *[]){&p.projection_matrix, &v.view_matrix, &m.model_matrix}, 3, mvp);
+    glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, (float *)mvp);
+}
+
 
 // update 3D context Projection matrix
 void _SRE_Projection_do_Set_Settings(SRE_Projection *self)

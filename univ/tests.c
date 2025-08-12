@@ -107,22 +107,28 @@ int main(int argc, char **argv)
 
     // 1 vertex mem size   *   1 triangle pack of mem size   *   how many triangles do we want to store
     //        6            *                 3               *                       20 (or more)
-    unsigned int nbr_of_vertices = 6*4;
-    float vertices[6*4] = {
-     0.0f,  0.8165f, 0.0f,   1.0f, 0.0f, 0.0f,
-    -0.5f, -0.2887f, 0.5f,   0.0f, 1.0f, 0.0f,
-     0.5f, -0.2887f, 0.5f,   0.0f, 0.0f, 1.0f,
-     0.0f, -0.2887f,-0.5f,   1.0f, 1.0f, 0.0f
+    unsigned int nbr_of_vertices = 6*8;
+    float vertices[6*8] = {
+        -1.0f, -1.0f, -1.0f,   1.0f, 0.0f, 0.0f,
+         1.0f, -1.0f, -1.0f,   0.0f, 1.0f, 0.0f,
+         1.0f,  1.0f, -1.0f,   0.0f, 0.0f, 1.0f,
+        -1.0f,  1.0f, -1.0f,   0.0f, 0.0f, 0.0f,
+
+        -1.0f, -1.0f,  1.0f,   1.0f, 0.0f, 0.0f,
+         1.0f, -1.0f,  1.0f,   0.0f, 1.0f, 0.0f,
+         1.0f,  1.0f,  1.0f,   0.0f, 0.0f, 1.0f,
+        -1.0f,  1.0f,  1.0f,   0.0f, 0.0f, 0.0f
     };
 
-    unsigned int nbr_of_indices = 12;
-    unsigned int indices[3*4] = {  // note that we start from 0!
-    0, 1, 2,
-    0, 2, 3,
-    0, 3, 1,
-    1, 3, 2
+    unsigned int nbr_of_indices = 6*6;
+    unsigned int indices[6*6] = {  // note that we start from 0!
+        0, 1, 2, 2, 3, 0, // lower face of the cube
+        4, 5, 6, 6, 7, 4, // higher face of the cube
+        0, 4, 7, 7, 3, 0, // left face of the cube
+        1, 5, 6, 6, 2, 1, // right face of the cube
+        3, 7, 6, 6, 2, 3, // top face of the cube
+        0, 4, 5, 5, 1, 0  // bottom face of the cube
     };
-
 
 
     // Create VAO and VBO and EBO
@@ -175,7 +181,6 @@ int main(int argc, char **argv)
 
 
     // MAIN LOOP
-    float time = SDL_GetTicks() / 1000.0f; // used to define the triangle's rotations
     int w, h;
 
     glBindVertexArray(VAO);
@@ -212,21 +217,38 @@ int main(int argc, char **argv)
         {
             // cam forward (zoom in)
             camera->zPos -= 0.05f;
+            camera->zLook -= 0.05f;
             camera->update(camera);
         }
         if (keys[SDL_SCANCODE_S])
         {
             // cam backward (zoom out)
             camera->zPos += 0.05f;
+            camera->zLook += 0.05f;
             camera->update(camera);
         }
 
-
-        // Rotating triangle
-        time = SDL_GetTicks() / 1000.0f;
-
-        tetrahedron_model->yRotAngle = time * 100.0f;
-        tetrahedron_model->update(tetrahedron_model);
+        // check model movements
+        if (keys[SDL_SCANCODE_LEFT])
+        {
+            tetrahedron_model->yRotAngle += 1.0f;
+            tetrahedron_model->update(tetrahedron_model);
+        }
+        if (keys[SDL_SCANCODE_RIGHT])
+        {
+            tetrahedron_model->yRotAngle -= 1.0f;
+            tetrahedron_model->update(tetrahedron_model);
+        }
+        if (keys[SDL_SCANCODE_UP])
+        {
+            tetrahedron_model->xRotAngle += 1.0f;
+            tetrahedron_model->update(tetrahedron_model);
+        }
+        if (keys[SDL_SCANCODE_DOWN])
+        {
+            tetrahedron_model->xRotAngle -= 1.0f;
+            tetrahedron_model->update(tetrahedron_model);
+        }
 
         // update the whole 3D matrix
         SRE_Update_Transformation_Matrix(mvpLoc, *tetrahedron_model, *camera, *projection_context);
@@ -251,7 +273,7 @@ int main(int argc, char **argv)
 
 
         // SDL: wait
-        SDL_Delay(4);
+        SDL_Delay(16);
     }
 
     // MAIN LOOP

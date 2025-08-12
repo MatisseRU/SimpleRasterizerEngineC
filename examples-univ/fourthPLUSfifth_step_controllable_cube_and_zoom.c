@@ -1,5 +1,7 @@
 #include "../univ/univ.h"
 
+
+
 int main(int argc, char **argv)
 {
     // SDL
@@ -13,7 +15,6 @@ int main(int argc, char **argv)
     {
         printf("Initialised SDL, version: %d\n", SDL_GetVersion());
     }
-
 
 
     // OPENGL
@@ -80,6 +81,7 @@ int main(int argc, char **argv)
     }
 
     gladLoadGLLoader(SDL_GL_GetProcAddress);
+    glEnable(GL_DEPTH_TEST);
 
 
     // Infos about the graphics card driver...
@@ -99,26 +101,34 @@ int main(int argc, char **argv)
 
     
     // Create a simple OpenGL pipeline (program)
-    unsigned int shaderProgram = SRE_CreateDefaultCornerColoredShaderProgram();
+    unsigned int shaderProgram = SRE_3D_CreateDefaultCornerColoredShaderProgram();
 
     /* TRIANGLE */
 
     // 1 vertex mem size   *   1 triangle pack of mem size   *   how many triangles do we want to store
     //        6            *                 3               *                       20 (or more)
-    // Total program memory consumption ~1.64 Kb.
-    unsigned int nbr_of_vertices = 6*3;
-    float vertices[6*3*20] = {
-    -0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,
-     0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,
-     0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f
+    unsigned int nbr_of_vertices = 6*8;
+    float vertices[6*8] = {
+        -1.0f, -1.0f, -1.0f,   1.0f, 0.0f, 0.0f,
+         1.0f, -1.0f, -1.0f,   0.0f, 1.0f, 0.0f,
+         1.0f,  1.0f, -1.0f,   0.0f, 0.0f, 1.0f,
+        -1.0f,  1.0f, -1.0f,   0.0f, 0.0f, 0.0f,
+
+        -1.0f, -1.0f,  1.0f,   1.0f, 0.0f, 0.0f,
+         1.0f, -1.0f,  1.0f,   0.0f, 1.0f, 0.0f,
+         1.0f,  1.0f,  1.0f,   0.0f, 0.0f, 1.0f,
+        -1.0f,  1.0f,  1.0f,   0.0f, 0.0f, 0.0f
     };
 
-    // 
-    unsigned int nbr_of_indices = 3;
-    unsigned int indices[3*20] = {  // note that we start from 0!
-    0, 1, 2
+    unsigned int nbr_of_indices = 6*6;
+    unsigned int indices[6*6] = {  // note that we start from 0!
+        0, 1, 2, 2, 3, 0, // lower face of the cube
+        4, 5, 6, 6, 7, 4, // higher face of the cube
+        0, 4, 7, 7, 3, 0, // left face of the cube
+        1, 5, 6, 6, 2, 1, // right face of the cube
+        3, 7, 6, 6, 2, 3, // top face of the cube
+        0, 4, 5, 5, 1, 0  // bottom face of the cube
     };
-
 
 
     // Create VAO and VBO and EBO
@@ -152,21 +162,34 @@ int main(int argc, char **argv)
     glEnableVertexAttribArray(1);
 
 
+    // CGLM: 3D !!
+
+    // create a 3D Projection matrix object
+    SRE_Projection *projection_context = SRE_Create_Projection_Object(45.0f, 800.0f, 600.0f, 0.1f, 100.0f);
+
+    // create a 3D Camera matrix object
+    SRE_View *camera = SRE_Create_View_Object(0.0f, 0.0f, 3.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+
+    // create a 3D Tetrahedron matrix object
+    SRE_Model *tetrahedron_model = SRE_Create_Model_Object(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
+
+
+    // Get the uMVP uniform from our default OpenGL 3D Shader Program
+    int mvpLoc = SRE_Get_Uniform_TransformationMatrix_From_ShaderProgram(shaderProgram);
+
+
+
 
     // MAIN LOOP
     int w, h;
-    float mouseX, mouseY;
 
-    float normX = 0.0f;
-    float normY = 0.0f;
+    glBindVertexArray(VAO);
+    glUseProgram(shaderProgram);
 
-    int nbr_of_new_vertices = 0;
-    uint8_t nbr_of_new_indices = 0;
-    float new_vertices[6*3];
-    float new_indices[3];
-
-    uint8_t run = 1;
     SDL_Event ev;
+    const uint8_t *keys = SDL_GetKeyboardState(NULL);
+
+    uint8_t run = 1;    
     while (run)
     {
         while (SDL_PollEvent(&ev) != 0)
@@ -175,117 +198,74 @@ int main(int argc, char **argv)
             {
                 run = 0;
             }
-
-            // Test if we already have 3 new vertices
-            if (nbr_of_new_indices == 3)
-            {
-                // add the new vertices to the vertex buffer
-                printf("New vertices:\n"); // DEBUG
-                for (unsigned int i = 0; i != nbr_of_new_vertices; i += 6)
-                {
-                    // DEBUG
-                    printf("Vertex n°%u: %f, %f, %f of color red: %f, %f, %f\n", (i+1), new_vertices[i], new_vertices[i+1], new_vertices[i+2], new_vertices[i+3], new_vertices[i+4], new_vertices[i+5]);
-                    // DEBUG
-
-                    vertices[nbr_of_vertices + i + 0] = new_vertices[i + 0];
-                    vertices[nbr_of_vertices + i + 1] = new_vertices[i + 1];
-                    vertices[nbr_of_vertices + i + 2] = new_vertices[i + 2];
-
-                    vertices[nbr_of_vertices + i + 3] = new_vertices[i + 3];
-                    vertices[nbr_of_vertices + i + 4] = new_vertices[i + 4];
-                    vertices[nbr_of_vertices + i + 5] = new_vertices[i + 5];
-                }
-                nbr_of_vertices += 6*3;
-
-
-                // add the new indices to the indice buffer
-                indices[nbr_of_indices + 0] = new_indices[0];
-                indices[nbr_of_indices + 1] = new_indices[1];
-                indices[nbr_of_indices + 2] = new_indices[2];
-                nbr_of_indices += 3;
-
-
-                // Update OpenGL
-                glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-                glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-                
-                // DEBUG
-
-                printf("\n\nAll of the vertices:\n");
-                for (unsigned int i = 0; i != nbr_of_vertices; i += 6)
-                {
-                    printf("Vertex n°%u: %f, %f, %f of color red: %f, %f, %f\n", (i+1), vertices[i], vertices[i+1], vertices[i+2], vertices[i+3], vertices[i+4], vertices[i+5]);
-                }
-
-                printf("\n\nAll of the indices:\n");
-                for (unsigned int i = 0; i != nbr_of_indices; i++)
-                {
-                    printf("Indice n°%u: %d\n", i, indices[i]);
-                }
-                
-                // DEBUG
-
-
-                // reset the check
-                nbr_of_new_vertices = 0;
-                nbr_of_new_indices = 0;
-            }
-
-            if (ev.type == SDL_EVENT_MOUSE_BUTTON_DOWN)
-            {
-                if (ev.button.button == SDL_BUTTON_LEFT)
-                {
-                    // Get the current position of the mouse
-                    SDL_GetMouseState(&mouseX, &mouseY);
-
-                    normX = (mouseX / w) * 2.0f - 1.0f;
-                    normY = 1.0f - (mouseY / h) * 2.0f;
-
-                    // Append the new vertex to a temp buffer
-
-                    // New vertex
-                    // x   y   z      r   g   b
-                    new_vertices[nbr_of_new_vertices + 0] = normX;
-                    new_vertices[nbr_of_new_vertices + 1] = normY;
-                    new_vertices[nbr_of_new_vertices + 2] = 0.0f;
-
-                    new_vertices[nbr_of_new_vertices + 3] = 1.0f;
-                    new_vertices[nbr_of_new_vertices + 4] = 0.0f;
-                    new_vertices[nbr_of_new_vertices + 5] = 0.0f;
-
-                    nbr_of_new_vertices += 6;
-
-                    // New indice for that vertex
-                    new_indices[nbr_of_new_indices] = nbr_of_indices + nbr_of_new_indices;
-                    nbr_of_new_indices++;
-                }
-            }
         }
 
-        /* Update Viewport */
 
+
+
+        /* Update Viewport */
         
         SDL_GetWindowSize(mainWindow, &w, &h);
         glViewport(0, 0, w, h);
+        projection_context->widthScreen = (float)w;
+        projection_context->hightScreen = (float)h;
+        projection_context->update(projection_context);
+
+
+        // check camera movements
+        if (keys[SDL_SCANCODE_W])
+        {
+            // cam forward (zoom in)
+            camera->zPos -= 0.05f;
+            camera->zLook -= 0.05f;
+            camera->update(camera);
+        }
+        if (keys[SDL_SCANCODE_S])
+        {
+            // cam backward (zoom out)
+            camera->zPos += 0.05f;
+            camera->zLook += 0.05f;
+            camera->update(camera);
+        }
+
+        // check model movements
+        if (keys[SDL_SCANCODE_LEFT])
+        {
+            tetrahedron_model->yRotAngle += 1.0f;
+            tetrahedron_model->update(tetrahedron_model);
+        }
+        if (keys[SDL_SCANCODE_RIGHT])
+        {
+            tetrahedron_model->yRotAngle -= 1.0f;
+            tetrahedron_model->update(tetrahedron_model);
+        }
+        if (keys[SDL_SCANCODE_UP])
+        {
+            tetrahedron_model->xRotAngle += 1.0f;
+            tetrahedron_model->update(tetrahedron_model);
+        }
+        if (keys[SDL_SCANCODE_DOWN])
+        {
+            tetrahedron_model->xRotAngle -= 1.0f;
+            tetrahedron_model->update(tetrahedron_model);
+        }
+
+        // update the whole 3D matrix
+        SRE_Update_Transformation_Matrix(mvpLoc, *tetrahedron_model, *camera, *projection_context);
+
 
 
         /* Back Ground */
 
         // OPENGL: set a grey background
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
+        
         /* Our Shapes */
-
-        // graphics pipeline (shader program)
-        // OPENGL: use our graphics pipeline and shaders
-        glUseProgram(shaderProgram);
 
         // DRAW IT
         // OPENGL: draw a shape
-        glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, nbr_of_indices, GL_UNSIGNED_INT, 0);
 
         // SDL: render it.
@@ -293,8 +273,7 @@ int main(int argc, char **argv)
 
 
         // SDL: wait
-        SDL_Delay(32);
-
+        SDL_Delay(16);
     }
 
     // MAIN LOOP
@@ -304,6 +283,9 @@ int main(int argc, char **argv)
 
 
     // Proper exit...
+    free(tetrahedron_model);
+    free(camera);
+    free(projection_context);
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteProgram(shaderProgram);

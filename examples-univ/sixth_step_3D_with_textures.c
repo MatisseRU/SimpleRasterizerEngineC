@@ -1,6 +1,6 @@
 #define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
-#include "./univ.h"
+#include "../univ/stb_image.h"
+#include "../univ/univ.h"
 
 
 int main(int argc, char **argv)

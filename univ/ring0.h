@@ -10,8 +10,10 @@
 
 unsigned int SRE_CreateDefaultShaderProgram(void);
 unsigned int SRE_CreateDefaultCornerColoredShaderProgram(void);
-unsigned int SRE_3D_CreateDefaultCornerColoredShaderProgram(void);
-int SRE_Get_Uniform_TransformationMatrix_From_ShaderProgram(unsigned int shaderProgram);
+unsigned int SRE_CreateDefaultTexturedShaderProgram(void);
 
+unsigned int SRE_3D_CreateDefaultCornerColoredShaderProgram(void);
+unsigned int SRE_3D_CreateDefaultTexturedShaderProgram(void);
+int SRE_Get_Uniform_TransformationMatrix_From_ShaderProgram(unsigned int shaderProgram);
 
 #endif

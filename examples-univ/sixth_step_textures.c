@@ -1,6 +1,6 @@
 #define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
-#include "./univ.h"
+#include "../univ/stb_image.h"
+#include "../univ/univ.h"
 
 
 int main(int argc, char **argv)
@@ -121,62 +121,23 @@ int main(int argc, char **argv)
 
     
     // Create a simple OpenGL pipeline (program)
-    unsigned int shaderProgram = SRE_3D_CreateDefaultTexturedShaderProgram();
+    unsigned int shaderProgram = SRE_CreateDefaultTexturedShaderProgram();
 
     /* TRIANGLE */
 
     // 1 vertex mem size   *   1 triangle pack of mem size   *   how many triangles do we want to store
     //        6            *                 3               *                       20 (or more)
-    unsigned int nbr_of_vertices = 24;
-    float vertices[24*5] = {
-        // behind (-Z)
+    unsigned int nbr_of_vertices = 5*3;
+    float vertices[6*8] = {
         -1.0f, -1.0f, -1.0f,   0.0f, 0.0f,
          1.0f, -1.0f, -1.0f,   1.0f, 0.0f,
-         1.0f,  1.0f, -1.0f,   1.0f, 1.0f,
-        -1.0f,  1.0f, -1.0f,   0.0f, 1.0f,
-
-        // forward (+Z)
-        -1.0f, -1.0f,  1.0f,   0.0f, 0.0f,
-         1.0f, -1.0f,  1.0f,   1.0f, 0.0f,
-         1.0f,  1.0f,  1.0f,   1.0f, 1.0f,
-        -1.0f,  1.0f,  1.0f,   0.0f, 1.0f,
-
-        // left (-X)
-        -1.0f, -1.0f, -1.0f,   0.0f, 0.0f,
-        -1.0f,  1.0f, -1.0f,   1.0f, 0.0f,
-        -1.0f,  1.0f,  1.0f,   1.0f, 1.0f,
-        -1.0f, -1.0f,  1.0f,   0.0f, 1.0f,
-
-        // right (+X)
-        1.0f, -1.0f, -1.0f,   0.0f, 0.0f,
-        1.0f,  1.0f, -1.0f,   1.0f, 0.0f,
-        1.0f,  1.0f,  1.0f,   1.0f, 1.0f,
-        1.0f, -1.0f,  1.0f,   0.0f, 1.0f,
-
-        // up (+Y)
-        -1.0f,  1.0f, -1.0f,   0.0f, 0.0f,
-         1.0f,  1.0f, -1.0f,   1.0f, 0.0f,
-         1.0f,  1.0f,  1.0f,   1.0f, 1.0f,
-        -1.0f,  1.0f,  1.0f,   0.0f, 1.0f,
-
-        // bottom (-Y)
-        -1.0f, -1.0f, -1.0f,   0.0f, 0.0f,
-         1.0f, -1.0f, -1.0f,   1.0f, 0.0f,
-         1.0f, -1.0f,  1.0f,   1.0f, 1.0f,
-        -1.0f, -1.0f,  1.0f,   0.0f, 1.0f
+         1.0f,  1.0f, -1.0f,   1.0f, 1.0f
     };
 
-    unsigned int nbr_of_indices = 36;
-    unsigned int indices[36] =
-    {
-        0, 1, 2, 2, 3, 0,       // behind
-        4, 5, 6, 6, 7, 4,       // forward
-        8, 9,10,10,11, 8,       // left
-        12,13,14,14,15,12,       // right
-        16,17,18,18,19,16,       // up
-        20,21,22,22,23,20        // bottom
+    unsigned int nbr_of_indices = 3*1;
+    unsigned int indices[3*1] = {  // note that we start from 0!
+        0, 1, 2
     };
-
 
 
     /* OpenGL Textures */
@@ -250,17 +211,17 @@ int main(int argc, char **argv)
     // CGLM: 3D !!
 
     // create a 3D Projection matrix object
-    SRE_Projection *projection_context = SRE_Create_Projection_Object(45.0f, 800.0f, 600.0f, 0.1f, 100.0f);
+    //SRE_Projection *projection_context = SRE_Create_Projection_Object(45.0f, 800.0f, 600.0f, 0.1f, 100.0f);
 
     // create a 3D Camera matrix object
-    SRE_View *camera = SRE_Create_View_Object(0.0f, 0.0f, 3.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+    //SRE_View *camera = SRE_Create_View_Object(0.0f, 0.0f, 3.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
 
     // create a 3D Tetrahedron matrix object
-    SRE_Model *cube_model = SRE_Create_Model_Object(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
+    //SRE_Model *cube_model = SRE_Create_Model_Object(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
 
 
     // Get the uMVP uniform from our default OpenGL 3D Shader Program
-    int mvpLoc = SRE_Get_Uniform_TransformationMatrix_From_ShaderProgram(shaderProgram);
+    //int mvpLoc = SRE_Get_Uniform_TransformationMatrix_From_ShaderProgram(shaderProgram);
 
 
 
@@ -279,7 +240,7 @@ int main(int argc, char **argv)
     glUniform1i(uniLoc, 0);
 
     SDL_Event ev;
-    const uint8_t *keys = SDL_GetKeyboardState(NULL);
+    //const uint8_t *keys = SDL_GetKeyboardState(NULL);
 
     const int targetFrameTime = 1000 / 30; // 16 ms
     uint64_t elapsed, frameStart;
@@ -306,11 +267,11 @@ int main(int argc, char **argv)
         
         SDL_GetWindowSize(mainWindow, &w, &h);
         glViewport(0, 0, w, h);
-        projection_context->widthScreen = (float)w;
-        projection_context->hightScreen = (float)h;
-        projection_context->update(projection_context);
+        //projection_context->widthScreen = (float)w;
+        //projection_context->hightScreen = (float)h;
+        //projection_context->update(projection_context);
 
-
+/*
         // check camera movements
         if (keys[SDL_SCANCODE_W])
         {
@@ -350,9 +311,9 @@ int main(int argc, char **argv)
         }
 
         // update the whole 3D matrix
-        SRE_Update_Transformation_Matrix(mvpLoc, *cube_model, *camera, *projection_context);
+        //SRE_Update_Transformation_Matrix(mvpLoc, *cube_model, *camera, *projection_context);
 
-
+*/
 
         /* Back Ground */
 
@@ -386,9 +347,9 @@ int main(int argc, char **argv)
 
 
     // Proper exit...
-    free(cube_model);
-    free(camera);
-    free(projection_context);
+    //free(cube_model);
+    //free(camera);
+    //free(projection_context);
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteProgram(shaderProgram);

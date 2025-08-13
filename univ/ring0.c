@@ -124,8 +124,8 @@ unsigned int SRE_3D_CreateDefaultCornerColoredShaderProgram(void)
     "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
     "layout (location = 1) in vec3 aColor;\n"
-    "uniform mat4 uMVP;\n"
     "out vec3 vertexColor;\n"
+    "uniform mat4 uMVP;\n"
     "void main()\n"
     "{\n"
     "   vertexColor = aColor;\n"
@@ -171,4 +171,118 @@ int SRE_Get_Uniform_TransformationMatrix_From_ShaderProgram(unsigned int shaderP
 {
     return glGetUniformLocation(shaderProgram, "uMVP");
 }
+
+unsigned int SRE_CreateDefaultTexturedShaderProgram(void)
+{
+    /*
+        Requires to pass the xyz coordinates of the vertices to an OpenGL vec3 vertex attribute at layout location 0,
+        the xy coordinates of the texture to an OpenGL vec2 vertex attribute at layout location 1 (very similar to corner colored thing),
+        and the 2D sampler of the texture.
+    */
+
+    const char* vertexShaderSource_default =
+    "#version 330 core\n"
+    "layout (location = 0) in vec3 aPos;\n"
+    "layout (location = 1) in vec2 aTexCoord;\n"
+    "out vec2 TexCoord;\n"
+    "void main()\n"
+    "{\n"
+    "   TexCoord = aTexCoord;\n"
+    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+    "}\0";
+
+    const char* fragmentShaderSource_default =
+    "#version 330 core\n"
+    "in vec2 TexCoord;\n"
+    "out vec4 FragColor;\n"
+    "uniform sampler2D ourTexture;\n"
+    "void main()\n"
+    "{\n"
+    "   FragColor = texture(ourTexture, TexCoord);\n"
+    "}\n\0";
+
+
+    // OPENGL: create the Vertex Shader
+    unsigned int vertexShader;
+    vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertexShader, 1, &vertexShaderSource_default, NULL);
+    glCompileShader(vertexShader);
+
+    // OPENGL: create the Fragment Shader
+    unsigned int fragmentShader;
+    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragmentShader, 1, &fragmentShaderSource_default, NULL);
+    glCompileShader(fragmentShader);
+
+    // OPENGL: shader program
+    unsigned int shaderProgram;
+    shaderProgram = glCreateProgram();
+    glAttachShader(shaderProgram, vertexShader);
+    glAttachShader(shaderProgram, fragmentShader);
+    glLinkProgram(shaderProgram);
+    
+    // OPENGL: clean up things and return the shader program
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+
+    return shaderProgram;
+}
+
+unsigned int SRE_3D_CreateDefaultTexturedShaderProgram(void)
+{
+    /*
+        Requires to pass the xyz coordinates of the vertices to an OpenGL vec3 vertex attribute at layout location 0,
+        the xy coordinates of the texture to an OpenGL vec2 vertex attribute at layout location 1 (very similar to corner colored thing),
+        and the 2D sampler of the texture.
+    */
+
+    const char* vertexShaderSource_default =
+    "#version 330 core\n"
+    "layout (location = 0) in vec3 aPos;\n"
+    "layout (location = 1) in vec2 aTexCoord;\n"
+    "out vec2 TexCoord;\n"
+    "uniform mat4 uMVP;\n"
+    "void main()\n"
+    "{\n"
+    "   TexCoord = aTexCoord;\n"
+    "   gl_Position = uMVP * vec4(aPos, 1.0);\n"
+    "}\0";
+
+    const char* fragmentShaderSource_default =
+    "#version 330 core\n"
+    "in vec2 TexCoord;\n"
+    "out vec4 FragColor;\n"
+    "uniform sampler2D ourTexture;\n"
+    "void main()\n"
+    "{\n"
+    "   FragColor = texture(ourTexture, TexCoord);\n"
+    "}\n\0";
+
+
+    // OPENGL: create the Vertex Shader
+    unsigned int vertexShader;
+    vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertexShader, 1, &vertexShaderSource_default, NULL);
+    glCompileShader(vertexShader);
+
+    // OPENGL: create the Fragment Shader
+    unsigned int fragmentShader;
+    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragmentShader, 1, &fragmentShaderSource_default, NULL);
+    glCompileShader(fragmentShader);
+
+    // OPENGL: shader program
+    unsigned int shaderProgram;
+    shaderProgram = glCreateProgram();
+    glAttachShader(shaderProgram, vertexShader);
+    glAttachShader(shaderProgram, fragmentShader);
+    glLinkProgram(shaderProgram);
+    
+    // OPENGL: clean up things and return the shader program
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+
+    return shaderProgram;
+}
+
 

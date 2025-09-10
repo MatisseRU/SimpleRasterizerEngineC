@@ -285,4 +285,166 @@ unsigned int SRE_3D_CreateDefaultTexturedShaderProgram(void)
     return shaderProgram;
 }
 
+/* Reads/writes */
+float* read_floats_from_file(const char* path, size_t* outCount)
+{
+    FILE* f = fopen(path, "r");
+    if (!f)
+    {
+        fprintf(stderr, "Error: cannot open file %s\n", path);
+        return NULL;
+    }
+
+    size_t capacity = 16;
+    size_t count = 0;
+    float* buffer = malloc(capacity * sizeof(float));
+    if (!buffer)
+    {
+        fprintf(stderr, "Error: cannot allocate memory\n");
+        fclose(f);
+        return NULL;
+    }
+
+    while (1)
+    {
+        float value;
+        if (fscanf(f, "%f", &value) != 1) break;
+        if (count >= capacity)
+        {
+            capacity *= 2;
+            float* tmp = realloc(buffer, capacity * sizeof(float));
+            if (!tmp)
+            {
+                fprintf(stderr, "Error: cannot reallocate memory\n");
+                free(buffer);
+                fclose(f);
+                return NULL;
+            }
+            buffer = tmp;
+        }
+        buffer[count++] = value;
+    }
+
+    fclose(f);
+    *outCount = count;
+    return buffer;
+}
+int write_floats_to_file(const char* path, const float* data, size_t count)
+{
+    FILE* f = fopen(path, "w");
+    if (!f)
+    {
+        fprintf(stderr, "Error: cannot open file %s for writing\n", path);
+        return -1;
+    }
+
+    for (size_t i = 0; i < count; i++)
+    {
+        if (fprintf(f, "%f\n", data[i]) < 0)
+        {
+            fprintf(stderr, "Error: failed to write to file %s\n", path);
+            fclose(f);
+            return -1;
+        }
+    }
+
+    fclose(f);
+    return 0;
+}
+unsigned int* read_uints_from_file(const char* path, size_t* outCount)
+{
+    FILE* f = fopen(path, "r");
+    if (!f)
+    {
+        fprintf(stderr, "Error: cannot open file %s\n", path);
+        return NULL;
+    }
+
+    size_t capacity = 16;
+    size_t count = 0;
+    unsigned int* buffer = malloc(capacity * sizeof(unsigned int));
+    if (!buffer)
+    {
+        fprintf(stderr, "Error: cannot allocate memory\n");
+        fclose(f);
+        return NULL;
+    }
+
+    while (1)
+    {
+        unsigned int value;
+        if (fscanf(f, "%u", &value) != 1) break;
+        if (count >= capacity)
+        {
+            capacity *= 2;
+            unsigned int* tmp = realloc(buffer, capacity * sizeof(unsigned int));
+            if (!tmp)
+            {
+                fprintf(stderr, "Error: cannot reallocate memory\n");
+                free(buffer);
+                fclose(f);
+                return NULL;
+            }
+            buffer = tmp;
+        }
+        buffer[count++] = value;
+    }
+
+    fclose(f);
+    *outCount = count;
+    return buffer;
+}
+int write_uints_to_file(const char* path, const unsigned int* data, size_t count)
+{
+    FILE* f = fopen(path, "w");
+    if (!f)
+    {
+        fprintf(stderr, "Error: cannot open file %s for writing\n", path);
+        return -1;
+    }
+
+    for (size_t i = 0; i < count; i++)
+    {
+        if (fprintf(f, "%u\n", data[i]) < 0)
+        {
+            fprintf(stderr, "Error: failed to write to file %s\n", path);
+            fclose(f);
+            return -1;
+        }
+    }
+
+    fclose(f);
+    return 0;
+}
+char *read_char_to_buffer(const char* path)
+{
+    FILE* f = fopen(path, "rb");
+    if (!f) {
+        perror("Failed to open file");
+        return NULL;
+    }
+
+    fseek(f, 0, SEEK_END);
+    long size = ftell(f);
+    rewind(f);
+
+    if (size < 0) {
+        perror("ftell failed");
+        fclose(f);
+        return NULL;
+    }
+
+    char* buffer = malloc(size + 1);
+    if (!buffer) {
+        perror("malloc failed");
+        fclose(f);
+        return NULL;
+    }
+
+    size_t read = fread(buffer, 1, size, f);
+    buffer[read] = '\0';
+    fclose(f);
+
+    return buffer;
+}
 

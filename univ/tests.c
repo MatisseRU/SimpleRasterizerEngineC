@@ -111,6 +111,19 @@ int main(int argc, char **argv)
     glGetIntegerv(GL_MAX_SAMPLES, &maxSamples);
     printf("Max MSAA samples: %d\n", maxSamples);
 
+    int maxTextureUnits;
+    glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &maxTextureUnits);
+    printf("Max texture slots (fragment shader): %d\n", maxTextureUnits);
+
+    int maxVertexTextureUnits;
+    glGetIntegerv(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, &maxVertexTextureUnits);
+    printf("Max texture slots (vertex shader): %d\n", maxVertexTextureUnits);
+
+    int maxCombinedTextureUnits;
+    glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxCombinedTextureUnits);
+    printf("Max combined texture slots (all shader stages): %d\n", maxCombinedTextureUnits);
+
+
 
 
 
@@ -191,7 +204,7 @@ int main(int argc, char **argv)
         fprintf(stderr, "\nFailed to load texture : \n%s\n\n", stbi_failure_reason());
     }else
     {
-        printf("Image texture loaded:\nwidth: %d\nheight :%d\nchannels: %d\n", width, height, nrChannels);
+        printf("Image texture loaded:\nwidth: %d\nheight: %d\nchannels: %d\n", width, height, nrChannels);
     }
 
 

@@ -1,4 +1,11 @@
 #include "./ring0.h"
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
+/* Global Variables */
+// DEBUG FLAG
+uint8_t SRE_DEBUGGING;
+
 
 /* OpenGL Shaders */
 
@@ -171,7 +178,6 @@ int SRE_Get_Uniform_TransformationMatrix_From_ShaderProgram(unsigned int shaderP
 {
     return glGetUniformLocation(shaderProgram, "uMVP");
 }
-
 unsigned int SRE_CreateDefaultTexturedShaderProgram(void)
 {
     /*
@@ -227,7 +233,6 @@ unsigned int SRE_CreateDefaultTexturedShaderProgram(void)
 
     return shaderProgram;
 }
-
 unsigned int SRE_3D_CreateDefaultTexturedShaderProgram(void)
 {
     /*
@@ -285,13 +290,147 @@ unsigned int SRE_3D_CreateDefaultTexturedShaderProgram(void)
     return shaderProgram;
 }
 
+
+/* OpenGL VAO / VBO / EBO manipulations */
+
+int SRE_SaveModel_TO_GLBuffers(GLuint VAO, GLuint VBO, GLuint EBO, float *vertices, unsigned int *indices, GLsizeiptr vert_size, uint16_t vert_nbr, GLsizeiptr ind_size, uint16_t ind_nbr, unsigned int vert_pos_layout_in_shader, int vert_pos_size_per_point, GLenum vert_pos_data_type, GLsizei vert_pos_stride, const void *vert_pos_pointer, unsigned int vert_color_layout_in_shader, int vert_color_size_per_point, GLenum vert_color_data_type, GLsizei vert_color_stride, const void *vert_color_pointer)
+{
+    // Bind VAO and VBO and EBO
+    // VAO
+    glBindVertexArray(VAO);
+    // VBO
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    // EBO
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+
+
+    // Store vertices postitions and indices, also specify the size of the vector and the starting pointer to the position data.
+    glBufferData(GL_ARRAY_BUFFER, vert_size, vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, ind_size, indices, GL_STATIC_DRAW);
+    glVertexAttribPointer(vert_pos_layout_in_shader, vert_pos_size_per_point, vert_pos_data_type, GL_FALSE, vert_pos_stride, vert_pos_pointer); // valable for VAO VBO and EBO
+    glEnableVertexAttribArray(vert_pos_layout_in_shader);
+    // Store the vertices color, also specify the size of the vector and the starting pointer to the texture coords.
+    glVertexAttribPointer(vert_color_layout_in_shader, vert_color_size_per_point, vert_color_data_type, GL_FALSE, vert_color_stride, vert_color_pointer); // valable for VAO VBO and EBO
+    glEnableVertexAttribArray(vert_color_layout_in_shader);
+
+    
+    // log out how many vertices are loaded
+    char tempBuff[100];
+    SRE_Log("Saved data in buffers for VAO n°", NULL);
+    sprintf(tempBuff, "%u", VAO);
+    SRE_Log(tempBuff, NULL);
+    SRE_Log("\n", NULL);
+
+    SRE_Log("Successfully loaded model with ", NULL);
+    sprintf(tempBuff, "%u", vert_nbr);
+    SRE_Log(tempBuff, NULL);
+    SRE_Log(" vertices and ", NULL);
+    sprintf(tempBuff, "%u", ind_nbr);
+    SRE_Log(tempBuff, NULL);
+    SRE_Log(" indices\n", NULL);
+
+    SRE_Log("Vertices:\n", NULL);
+    for (uint16_t i = 0; i < vert_nbr; i++)
+    {
+        sprintf(tempBuff, "%f", vertices[i]);
+        SRE_Log(tempBuff, NULL);
+        SRE_Log(" ; ", NULL);
+    }
+    
+    SRE_Log("\nIndices:\n", NULL);
+    for (uint16_t i = 0; i < ind_nbr; i++)
+    {
+        sprintf(tempBuff, "%u", indices[i]);
+        SRE_Log(tempBuff, NULL);
+        SRE_Log(" ; ", NULL);
+    }
+    SRE_Log("\n", NULL);
+
+
+    // Clean up bindings, preventing from unwanted changes.
+    // VAO
+    glBindVertexArray(0);
+    // VBO
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    // EBO
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    return 0;
+}
+
+
+/* OpenGL texture manipulations */
+
+int SRE_CreateTextureFromFile(const char *texture_file_path, GLuint gl_texture_id)
+{
+    // Load texture
+    int width, height, nrChannels;
+    stbi_set_flip_vertically_on_load(1);
+    unsigned char *textureLoaded = stbi_load(texture_file_path, &width, &height, &nrChannels, 0);
+
+    if (textureLoaded == NULL)
+    {
+        SRE_Log("\nFailed to load texture : \n", NULL);
+        SRE_Log(stbi_failure_reason(), NULL);
+        SRE_Log("\n", NULL);
+    }else
+    {
+        char tempbuff[100];
+
+        SRE_Log("Image texture loaded:\nwidth: ", NULL);
+        // width
+        sprintf(tempbuff, "%d", width);
+        SRE_Log(tempbuff, NULL);
+        SRE_Log("\n", NULL);
+        // height
+        SRE_Log("height: ", NULL);
+        sprintf(tempbuff, "%d", height);
+        SRE_Log(tempbuff, NULL);
+        SRE_Log("\n", NULL);
+        // channels
+        SRE_Log("channels: ", NULL);
+        sprintf(tempbuff, "%d", nrChannels);
+        SRE_Log(tempbuff, NULL);
+        SRE_Log("\n", NULL);
+    }
+
+
+    // Create an OpenGL texture
+    glBindTexture(GL_TEXTURE_2D, gl_texture_id);
+
+    // Wrapping settings
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    // Filtering settings
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    // Format RGB
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, textureLoaded);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    stbi_image_free(textureLoaded);
+
+    // Clean unbinding
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+
+    return 0;
+}
+
+
+
 /* Reads/writes */
+
 float* read_floats_from_file(const char* path, size_t* outCount)
 {
     FILE* f = fopen(path, "r");
     if (!f)
     {
-        fprintf(stderr, "Error: cannot open file %s\n", path);
+        SRE_Log("Error: cannot open file ", NULL);
+        SRE_Log(path, NULL);
+        SRE_Log("\n", NULL);
         return NULL;
     }
 
@@ -300,7 +439,7 @@ float* read_floats_from_file(const char* path, size_t* outCount)
     float* buffer = malloc(capacity * sizeof(float));
     if (!buffer)
     {
-        fprintf(stderr, "Error: cannot allocate memory\n");
+        SRE_Log("Error: cannot allocate memory\n", NULL);
         fclose(f);
         return NULL;
     }
@@ -315,7 +454,7 @@ float* read_floats_from_file(const char* path, size_t* outCount)
             float* tmp = realloc(buffer, capacity * sizeof(float));
             if (!tmp)
             {
-                fprintf(stderr, "Error: cannot reallocate memory\n");
+                SRE_Log("Error: cannot reallocate memory\n", NULL);
                 free(buffer);
                 fclose(f);
                 return NULL;
@@ -334,7 +473,9 @@ int write_floats_to_file(const char* path, const float* data, size_t count)
     FILE* f = fopen(path, "w");
     if (!f)
     {
-        fprintf(stderr, "Error: cannot open file %s for writing\n", path);
+        SRE_Log("Error: cannot open file ", NULL);
+        SRE_Log(path, NULL);
+        SRE_Log("\n", NULL);
         return -1;
     }
 
@@ -342,7 +483,9 @@ int write_floats_to_file(const char* path, const float* data, size_t count)
     {
         if (fprintf(f, "%f\n", data[i]) < 0)
         {
-            fprintf(stderr, "Error: failed to write to file %s\n", path);
+            SRE_Log("Error: cannot write to file ", NULL);
+            SRE_Log(path, NULL);
+            SRE_Log("\n", NULL);
             fclose(f);
             return -1;
         }
@@ -356,7 +499,9 @@ unsigned int* read_uints_from_file(const char* path, size_t* outCount)
     FILE* f = fopen(path, "r");
     if (!f)
     {
-        fprintf(stderr, "Error: cannot open file %s\n", path);
+        SRE_Log("Error: cannot open file ", NULL);
+        SRE_Log(path, NULL);
+        SRE_Log("\n", NULL);
         return NULL;
     }
 
@@ -365,7 +510,7 @@ unsigned int* read_uints_from_file(const char* path, size_t* outCount)
     unsigned int* buffer = malloc(capacity * sizeof(unsigned int));
     if (!buffer)
     {
-        fprintf(stderr, "Error: cannot allocate memory\n");
+        SRE_Log("Error: cannot allocate memory\n", NULL);
         fclose(f);
         return NULL;
     }
@@ -380,7 +525,7 @@ unsigned int* read_uints_from_file(const char* path, size_t* outCount)
             unsigned int* tmp = realloc(buffer, capacity * sizeof(unsigned int));
             if (!tmp)
             {
-                fprintf(stderr, "Error: cannot reallocate memory\n");
+                SRE_Log("Error: cannot reallocate memory\n", NULL);
                 free(buffer);
                 fclose(f);
                 return NULL;
@@ -399,7 +544,9 @@ int write_uints_to_file(const char* path, const unsigned int* data, size_t count
     FILE* f = fopen(path, "w");
     if (!f)
     {
-        fprintf(stderr, "Error: cannot open file %s for writing\n", path);
+        SRE_Log("Error: cannot open file ", NULL);
+        SRE_Log(path, NULL);
+        SRE_Log(" for writing\n", NULL);
         return -1;
     }
 
@@ -447,4 +594,105 @@ char *read_char_to_buffer(const char* path)
 
     return buffer;
 }
+
+
+
+
+/* logging system */
+// Logging/debugging/printing function, you should replace fprintf with this implementation, pass NULL to auxiliary_output if not necessary.
+int SRE_Log(const char *in_buffer, FILE *auxiliary_output)
+{
+    FILE *logOutput = fopen(SRE_LOG_PATH, "a");
+    fprintf(logOutput, in_buffer);
+
+    if (auxiliary_output != NULL)
+    {
+        fprintf(auxiliary_output, in_buffer);
+    }
+
+    // if we're debugging
+    if (SRE_DEBUGGING == 1)
+    {
+        fprintf(stderr, in_buffer);
+    }
+
+    fclose(logOutput);
+
+    return 0;
+}
+
+
+
+
+/* example shapes */
+// exports the vertices / indices of a 3D model cube to a file you can open and load the model from.
+int SRE_3D_ExportDefaultTexturedCube(void)
+{
+    unsigned int nbr_of_vertices = 24*5;
+    float vertices[24*5] =
+    {
+        // behind (-Z)
+        -1.0f, -1.0f, -1.0f,   0.0f, 0.0f,
+         1.0f, -1.0f, -1.0f,   1.0f, 0.0f,
+         1.0f,  1.0f, -1.0f,   1.0f, 1.0f,
+        -1.0f,  1.0f, -1.0f,   0.0f, 1.0f,
+
+        // forward (+Z)
+        -1.0f, -1.0f,  1.0f,   0.0f, 0.0f,
+         1.0f, -1.0f,  1.0f,   1.0f, 0.0f,
+         1.0f,  1.0f,  1.0f,   1.0f, 1.0f,
+        -1.0f,  1.0f,  1.0f,   0.0f, 1.0f,
+
+        // left (-X)
+        -1.0f, -1.0f, -1.0f,   0.0f, 0.0f,
+        -1.0f,  1.0f, -1.0f,   1.0f, 0.0f,
+        -1.0f,  1.0f,  1.0f,   1.0f, 1.0f,
+        -1.0f, -1.0f,  1.0f,   0.0f, 1.0f,
+
+        // right (+X)
+        1.0f, -1.0f, -1.0f,   0.0f, 0.0f,
+        1.0f,  1.0f, -1.0f,   1.0f, 0.0f,
+        1.0f,  1.0f,  1.0f,   1.0f, 1.0f,
+        1.0f, -1.0f,  1.0f,   0.0f, 1.0f,
+
+        // up (+Y)
+        -1.0f,  1.0f, -1.0f,   0.0f, 0.0f,
+         1.0f,  1.0f, -1.0f,   1.0f, 0.0f,
+         1.0f,  1.0f,  1.0f,   1.0f, 1.0f,
+        -1.0f,  1.0f,  1.0f,   0.0f, 1.0f,
+
+        // bottom (-Y)
+        -1.0f, -1.0f, -1.0f,   0.0f, 0.0f,
+         1.0f, -1.0f, -1.0f,   1.0f, 0.0f,
+         1.0f, -1.0f,  1.0f,   1.0f, 1.0f,
+        -1.0f, -1.0f,  1.0f,   0.0f, 1.0f
+    };
+
+    unsigned int nbr_of_indices = 36;
+    unsigned int indices[36] =
+    {
+        0, 1, 2, 2, 3, 0,       // behind
+        4, 5, 6, 6, 7, 4,       // forward
+        8, 9,10,10,11, 8,       // left
+        12,13,14,14,15,12,       // right
+        16,17,18,18,19,16,       // up
+        20,21,22,22,23,20        // bottom
+    };
+
+    if (write_floats_to_file("3D_cube.vert", vertices, nbr_of_vertices) < 0)
+    {
+        SRE_Log("Failed to write to file cube vertices\n", NULL);
+        return -1;
+    }
+
+    if (write_uints_to_file("3D_cube.indi", indices, nbr_of_indices))
+    {
+        SRE_Log("Failed to write to file cube indices\n", NULL);
+        return -1;
+    }
+
+
+    return 0;
+}
+
 

@@ -1,266 +1,25 @@
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
 #include "./univ.h"
 
 
 int main(int argc, char **argv)
 {
-    // SDL
 
-    if (!SDL_Init(SDL_INIT_VIDEO))
+    // DEBUG ?
+    SRE_DEBUGGING = 1;
+    // DEBUG ?
+
+
+
+    if (SRE_Init_Engine(24, 2, 800, 600) < 0)
     {
-        fprintf(stderr, "Failed at SDL_Init: \n%s\n", SDL_GetError());
-        SDL_Quit();
-        return -1;
-    }else
-    {
-        printf("Initialised SDL, version: %d\n", SDL_GetVersion());
-    }
-
-
-    // OPENGL
-
-
-    if (!SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3))
-    {
-        fprintf(stderr, "Failed at SDL_GL_SetAttribute major version setting: \n%s\n", SDL_GetError());
-        SDL_Quit();
+        SRE_Log("Error while initialising engine\n", NULL);
         return -1;
     }
 
-    if (!SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3))
-    {
-        fprintf(stderr, "Failed at SDL_GL_SetAttribute minor version setting: \n%s\n", SDL_GetError());
-        SDL_Quit();
-        return -1;
-    }
-
-    if (!SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE))
-    {
-        fprintf(stderr, "Failed at SDL_GL_SetAttribute profile mask core: \n%s\n", SDL_GetError());
-        SDL_Quit();
-        return -1;
-    }
-
-    if (!SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1))
-    {
-        fprintf(stderr, "Failed at SDL_GL_SetAttribute double buffering: \n%s\n", SDL_GetError());
-        SDL_Quit();
-        return -1;
-    }
-
-    if (!SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24))
-    {
-        fprintf(stderr, "Failed at SDL_GL_SetAttribute depth size: \n%s\n", SDL_GetError());
-        SDL_Quit();
-        return -1;
-    }
-
-    if (!SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1))
-    {
-        fprintf(stderr, "Failed at SDL_GL_SetAttribute multisamplebuffers: \n%s\n", SDL_GetError());
-        SDL_Quit();
-        return -1;
-    }
-
-    if (!SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 2))
-    {
-        fprintf(stderr, "Failed at SDL_GL_SetAttribute multisamples: \n%s\n", SDL_GetError());
-        SDL_Quit();
-        return -1;
-    }
+    SRE_3D_ExportDefaultTexturedCube();
 
 
-
-    // SDL
-    
-    SDL_Window *mainWindow = SDL_CreateWindow("Main Test", 800, 600, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
-    if (mainWindow == NULL)
-    {
-        fprintf(stderr, "Failed at SDL_CreateWindow: \n%s\n", SDL_GetError());
-        SDL_Quit();
-        return -1;
-    }
-
-
-    
-    // OPENGL
-
-    SDL_GLContext mainWindowGL_ctx = SDL_GL_CreateContext(mainWindow);
-    if (mainWindowGL_ctx == NULL)
-    {
-        fprintf(stderr, "Failed at SDL_GL_CreateContext: \n%s\n", SDL_GetError());
-        SDL_DestroyWindow(mainWindow);
-        SDL_Quit();
-        return -1;
-    }
-
-    gladLoadGLLoader(SDL_GL_GetProcAddress);
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_MULTISAMPLE);
-
-
-    // Infos about the graphics card driver...
-    printf("Your OpenGL version: %s\n", glGetString(GL_VERSION));
-
-    int nrAttributes;
-    glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
-    printf("Your graphics card can handle %d vertex attributes\n", nrAttributes);
-
-    int maxSamples;
-    glGetIntegerv(GL_MAX_SAMPLES, &maxSamples);
-    printf("Max MSAA samples: %d\n", maxSamples);
-
-    int maxTextureUnits;
-    glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &maxTextureUnits);
-    printf("Max texture slots (fragment shader): %d\n", maxTextureUnits);
-
-    int maxVertexTextureUnits;
-    glGetIntegerv(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, &maxVertexTextureUnits);
-    printf("Max texture slots (vertex shader): %d\n", maxVertexTextureUnits);
-
-    int maxCombinedTextureUnits;
-    glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxCombinedTextureUnits);
-    printf("Max combined texture slots (all shader stages): %d\n", maxCombinedTextureUnits);
-
-
-
-
-
-
-    /* LET'S GO */
-
-    glViewport(0, 0, 800, 600);
-
-    
-    // Create a simple OpenGL pipeline (program)
-    unsigned int shaderProgram = SRE_3D_CreateDefaultTexturedShaderProgram();
-
-    /* TRIANGLE */
-
-    // 1 vertex mem size   *   1 triangle pack of mem size   *   how many triangles do we want to store
-    //        6            *                 3               *                       20 (or more)
-    unsigned int nbr_of_vertices = 24;
-    float vertices[24*5] = {
-        // behind (-Z)
-        -1.0f, -1.0f, -1.0f,   0.0f, 0.0f,
-         1.0f, -1.0f, -1.0f,   1.0f, 0.0f,
-         1.0f,  1.0f, -1.0f,   1.0f, 1.0f,
-        -1.0f,  1.0f, -1.0f,   0.0f, 1.0f,
-
-        // forward (+Z)
-        -1.0f, -1.0f,  1.0f,   0.0f, 0.0f,
-         1.0f, -1.0f,  1.0f,   1.0f, 0.0f,
-         1.0f,  1.0f,  1.0f,   1.0f, 1.0f,
-        -1.0f,  1.0f,  1.0f,   0.0f, 1.0f,
-
-        // left (-X)
-        -1.0f, -1.0f, -1.0f,   0.0f, 0.0f,
-        -1.0f,  1.0f, -1.0f,   1.0f, 0.0f,
-        -1.0f,  1.0f,  1.0f,   1.0f, 1.0f,
-        -1.0f, -1.0f,  1.0f,   0.0f, 1.0f,
-
-        // right (+X)
-        1.0f, -1.0f, -1.0f,   0.0f, 0.0f,
-        1.0f,  1.0f, -1.0f,   1.0f, 0.0f,
-        1.0f,  1.0f,  1.0f,   1.0f, 1.0f,
-        1.0f, -1.0f,  1.0f,   0.0f, 1.0f,
-
-        // up (+Y)
-        -1.0f,  1.0f, -1.0f,   0.0f, 0.0f,
-         1.0f,  1.0f, -1.0f,   1.0f, 0.0f,
-         1.0f,  1.0f,  1.0f,   1.0f, 1.0f,
-        -1.0f,  1.0f,  1.0f,   0.0f, 1.0f,
-
-        // bottom (-Y)
-        -1.0f, -1.0f, -1.0f,   0.0f, 0.0f,
-         1.0f, -1.0f, -1.0f,   1.0f, 0.0f,
-         1.0f, -1.0f,  1.0f,   1.0f, 1.0f,
-        -1.0f, -1.0f,  1.0f,   0.0f, 1.0f
-    };
-
-    unsigned int nbr_of_indices = 36;
-    unsigned int indices[36] =
-    {
-        0, 1, 2, 2, 3, 0,       // behind
-        4, 5, 6, 6, 7, 4,       // forward
-        8, 9,10,10,11, 8,       // left
-        12,13,14,14,15,12,       // right
-        16,17,18,18,19,16,       // up
-        20,21,22,22,23,20        // bottom
-    };
-
-
-
-    /* OpenGL Textures */
-
-    // Load texture
-    int width, height, nrChannels;
-    stbi_set_flip_vertically_on_load(1);
-    unsigned char *textureLoaded = stbi_load("/home/lenovo/Documents/Info/GameEngine/SimpleRasterizerEngineC/examples-univ/WADs/textures/wall.jpg", &width, &height, &nrChannels, 0);
-
-    if (textureLoaded == NULL)
-    {
-        fprintf(stderr, "\nFailed to load texture : \n%s\n\n", stbi_failure_reason());
-    }else
-    {
-        printf("Image texture loaded:\nwidth: %d\nheight: %d\nchannels: %d\n", width, height, nrChannels);
-    }
-
-
-    // Create an OpenGL texture
-    unsigned int textureCreated;
-    glGenTextures(1, &textureCreated);
-    glBindTexture(GL_TEXTURE_2D, textureCreated);
-
-    // Wrapping settings
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-    // Filtering settings
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    // Format RGB
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, textureLoaded);
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-    stbi_image_free(textureLoaded);
-
-
-
-    // Create VAO and VBO and EBO
-    // VAO
-    unsigned int VAO;
-    glGenVertexArrays(1, &VAO);
-    // VBO
-    unsigned int VBO;
-    glGenBuffers(1, &VBO);
-    // EBO
-    unsigned int EBO;
-    glGenBuffers(1, &EBO);
-
-
-    // Bind VAO and VBO and EBO
-    // VAO
-    glBindVertexArray(VAO);
-    // VBO
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    // EBO
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-
-
-    // Store vertices postitions and indices, also specify the size of the vector and the starting pointer to the position data.
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0); // valable for VAO VBO and EBO
-    glEnableVertexAttribArray(0);
-    // Store the vertices color, also specify the size of the vector and the starting pointer to the texture coords.
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float))); // valable for VAO VBO and EBO
-    glEnableVertexAttribArray(1);
-
-
-    // CGLM: 3D !!
+    /* RECTANGLE */
 
     // create a 3D Projection matrix object
     SRE_Projection *projection_context = SRE_Create_Projection_Object(45.0f, 800.0f, 600.0f, 0.1f, 100.0f);
@@ -271,9 +30,36 @@ int main(int argc, char **argv)
     // create a 3D Tetrahedron matrix object
     SRE_Model *cube_model = SRE_Create_Model_Object(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
 
+    // create the default shader program
+    cube_model->_SELECTED_SHADER = 0;
+    cube_model->_ShaderProgram[cube_model->_SELECTED_SHADER] = SRE_3D_CreateDefaultTexturedShaderProgram();
+    cube_model->_SHADER_PROGRAM_BUFFLEN = 1;
 
-    // Get the uMVP uniform from our default OpenGL 3D Shader Program
-    int mvpLoc = SRE_Get_Uniform_TransformationMatrix_From_ShaderProgram(shaderProgram);
+    // load vertices to the model
+    cube_model->_VERTICES = read_floats_from_file("3D_cube.vert", (size_t *)&cube_model->_VERTICES_BUFFLEN);
+    if (cube_model->_VERTICES == NULL)
+    {
+        SRE_Log("Failed to load vertices to cube model\n", NULL);
+        return -1;
+    }
+
+    // load indices to the model
+    cube_model->_INDICES = read_uints_from_file("3D_cube.indi", (size_t *)&cube_model->_INDICES_BUFFLEN);
+    if (cube_model->_INDICES == NULL)
+    {
+        SRE_Log("Failed to load indices to cube model\n", NULL);
+        return -1;
+    }
+
+
+    // save vertices and indices to buffers
+    SRE_SaveModel_TO_GLBuffers(cube_model->_VAO[cube_model->_SELECTED_BUFFER], cube_model->_VBO[cube_model->_SELECTED_BUFFER], cube_model->_EBO[cube_model->_SELECTED_BUFFER], cube_model->_VERTICES, cube_model->_INDICES, sizeof(float) * cube_model->_VERTICES_BUFFLEN, cube_model->_VERTICES_BUFFLEN, sizeof(float) * cube_model->_INDICES_BUFFLEN, cube_model->_INDICES_BUFFLEN, 0, 3, GL_FLOAT, 5 * sizeof(float), (void*)0, 1, 2, GL_FLOAT, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    
+    // create the brick wall texture
+    SRE_CreateTextureFromFile("/home/lenovo/Documents/Info/GameEngine/SimpleRasterizerEngineC/examples-univ/WADs/textures/wall.jpg", cube_model->_Texture[cube_model->_SELECTED_TEXTURE]);
+    
+    // get the uMVP uniform from our default OpenGL 3D Shader Program
+    cube_model->mvpLoc = SRE_Get_Uniform_TransformationMatrix_From_ShaderProgram(cube_model->_ShaderProgram[cube_model->_SELECTED_SHADER]);
 
 
 
@@ -281,18 +67,20 @@ int main(int argc, char **argv)
     // MAIN LOOP
     int w, h;
 
-    glBindVertexArray(VAO);
-    glUseProgram(shaderProgram);
-
-    // bind GL_TEXTURE0 to our own texture
+    // bind the VAO
+    glBindVertexArray(cube_model->_VAO[cube_model->_SELECTED_BUFFER]);
+    // bind the Shader Program
+    glUseProgram(cube_model->_ShaderProgram[cube_model->_SELECTED_SHADER]);
+    // bind GL_TEXTURE0 to our brick wall texture
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, textureCreated);
-    // get the uniform
-    int uniLoc = glGetUniformLocation(shaderProgram, "ourTexture");
+    glBindTexture(GL_TEXTURE_2D, cube_model->_Texture[cube_model->_SELECTED_TEXTURE]);
+    // get the 3D matrix uniform
+    int uniLoc = glGetUniformLocation(cube_model->_ShaderProgram[cube_model->_SELECTED_SHADER], "ourTexture");
     glUniform1i(uniLoc, 0);
 
+
     SDL_Event ev;
-    const uint8_t *keys = SDL_GetKeyboardState(NULL);
+    const bool *keys = SDL_GetKeyboardState(NULL);
 
     const int targetFrameTime = 1000 / 30; // 16 ms
     uint64_t elapsed, frameStart;
@@ -301,8 +89,6 @@ int main(int argc, char **argv)
     while (run)
     {
         frameStart = SDL_GetTicks();
-
-
 
         while (SDL_PollEvent(&ev) != 0)
         {
@@ -313,10 +99,7 @@ int main(int argc, char **argv)
         }
 
 
-
-
-        /* Update Viewport */
-        
+        // Update Viewport
         SDL_GetWindowSize(mainWindow, &w, &h);
         glViewport(0, 0, w, h);
         projection_context->widthScreen = (float)w;
@@ -363,22 +146,17 @@ int main(int argc, char **argv)
         }
 
         // update the whole 3D matrix
-        SRE_Update_Transformation_Matrix(mvpLoc, *cube_model, *camera, *projection_context);
+        SRE_Update_Transformation_Matrix(cube_model->mvpLoc, *cube_model, *camera, *projection_context);
 
-
-
-        /* Back Ground */
 
         // OPENGL: set a grey background
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        
-        /* Our Shapes */
 
         // DRAW IT
         // OPENGL: draw a shape
-        glDrawElements(GL_TRIANGLES, nbr_of_indices, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, cube_model->_INDICES_BUFFLEN, GL_UNSIGNED_INT, 0);
 
         // SDL: render it.
         SDL_GL_SwapWindow(mainWindow);
@@ -391,7 +169,6 @@ int main(int argc, char **argv)
             SDL_Delay(targetFrameTime - elapsed);
         }
     }
-
     // MAIN LOOP
 
 
@@ -399,13 +176,9 @@ int main(int argc, char **argv)
 
 
     // Proper exit...
-    free(cube_model);
+    SRE_Destroy_Model_Object(cube_model);
     free(camera);
     free(projection_context);
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    glDeleteProgram(shaderProgram);
-    SDL_DestroyWindow(mainWindow);
-    SDL_Quit();
+    SRE_Exit_Engine();
     return 0;
 }

@@ -39,3 +39,4 @@ A model can be exported to different formats which are all necessary when rebuil
 
 ## "Easy stuff", designing and testing:
 - Test the available code (from example.c, see Build section in the README) with different textures, vertices and indices.
+- Correct my poor English phrasing / orthograph... :'(  (I'm not focused on that)

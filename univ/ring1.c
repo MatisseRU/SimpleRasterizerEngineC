@@ -335,7 +335,7 @@ void SRE_ring1_Destroy_Model_Object(SRE_ring1_Model *model)
     free(model);
 }
 
-int SRE_ring1_Create_Model_Shader(SRE_ring1_Model *model, const char *shader_path)
+void SRE_ring1_Append_Model_Shader(SRE_ring1_Model *model, const char *shader_path)
 {
     // default shaders
     if (strcmp(shader_path, "DefaultShaderProgram") == 0)
@@ -343,27 +343,55 @@ int SRE_ring1_Create_Model_Shader(SRE_ring1_Model *model, const char *shader_pat
         model->_ShaderProgram[model->_SHADER_PROGRAM_BUFFLEN] = SRE_ring0_CreateDefaultShaderProgram();
         model->_SHADER_PROGRAM_BUFFLEN += 1;
     }
-    if (strcmp(shader_path, "DefaultCornerColoredShaderProgram") == 0)
+    else if (strcmp(shader_path, "DefaultCornerColoredShaderProgram") == 0)
     {
         model->_ShaderProgram[model->_SHADER_PROGRAM_BUFFLEN] = SRE_ring0_CreateDefaultCornerColoredShaderProgram();
         model->_SHADER_PROGRAM_BUFFLEN += 1;
     }
-    if (strcmp(shader_path, "DefaultTexturedShaderProgram") == 0)
+    else if (strcmp(shader_path, "DefaultTexturedShaderProgram") == 0)
     {
         model->_ShaderProgram[model->_SHADER_PROGRAM_BUFFLEN] = SRE_ring0_CreateDefaultTexturedShaderProgram();
         model->_SHADER_PROGRAM_BUFFLEN += 1;
     }
-    if (strcmp(shader_path, "3D_DefaultCornerColoredShaderProgram") == 0)
+    else if (strcmp(shader_path, "3D_DefaultCornerColoredShaderProgram") == 0)
     {
         model->_ShaderProgram[model->_SHADER_PROGRAM_BUFFLEN] = SRE_ring0_3D_CreateDefaultCornerColoredShaderProgram();
         model->_SHADER_PROGRAM_BUFFLEN += 1;
     }
-    if (strcmp(shader_path, "3D_DefaultTexturedShaderProgram") == 0)
+    else if (strcmp(shader_path, "3D_DefaultTexturedShaderProgram") == 0)
     {
         model->_ShaderProgram[model->_SHADER_PROGRAM_BUFFLEN] = SRE_ring0_3D_CreateDefaultTexturedShaderProgram();
         model->_SHADER_PROGRAM_BUFFLEN += 1;
+    }else
+    {
+        char vshader_path[8192];
+        char fshader_path[8192];
+        strncpy(vshader_path, shader_path, 8183);
+        strncpy(fshader_path, shader_path, 8183);
+
+        strcat(vshader_path, ".vshader");
+        strcat(fshader_path, ".fshader");
+
+        model->_ShaderProgram[model->_SHADER_PROGRAM_BUFFLEN] = SRE_ring0_3D_CreateShaderProgram_From_File(vshader_path, fshader_path);
+        model->_SHADER_PROGRAM_BUFFLEN += 1;
     }
 
-    // TODO
+    if (model->_ShaderProgram[model->_SHADER_PROGRAM_BUFFLEN - 1] == 0)
+    {
+        model->_SHADER_PROGRAM_BUFFLEN--;
 
+        char temp_buff[64];
+        SRE_Log("Failed to create and append shader program n°", NULL);
+        sprintf(temp_buff, "%u", model->_SHADER_PROGRAM_BUFFLEN);
+        SRE_Log(temp_buff, NULL);
+        SRE_Log(" to a model.\n", NULL);
+    }
+    else
+    {
+        char temp_buff[64];
+        SRE_Log("Created and appended shader program n°", NULL);
+        sprintf(temp_buff, "%u", model->_SHADER_PROGRAM_BUFFLEN - 1);
+        SRE_Log(temp_buff, NULL);
+        SRE_Log(" to a model.\n", NULL);
+    }
 }

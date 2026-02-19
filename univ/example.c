@@ -16,7 +16,7 @@ int main(int argc, char **argv)
         return -1;
     }
 
-    SRE_ring0_3D_ExportDefaultTexturedCube();
+    // SRE_ring0_3D_ExportDefaultTexturedCube();
 
 
     /* RECTANGLE */
@@ -31,12 +31,15 @@ int main(int argc, char **argv)
     SRE_ring1_Model *cube_model = SRE_ring1_Create_Model_Object(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
 
     // create the default shader program
+    SRE_ring1_Append_Model_Shader(cube_model, "./WADs/complete_models/3D_cube");
     cube_model->_SELECTED_SHADER = 0;
+    /*
     cube_model->_ShaderProgram[cube_model->_SELECTED_SHADER] = SRE_ring0_3D_CreateDefaultTexturedShaderProgram();
     cube_model->_SHADER_PROGRAM_BUFFLEN = 1;
+    */
 
     // load vertices to the model
-    cube_model->_VERTICES = SRE_ring0_read_floats_from_file("3D_cube.vert", (size_t *)&cube_model->_VERTICES_BUFFLEN);
+    cube_model->_VERTICES = SRE_ring0_read_floats_from_file("./WADs/complete_models/3D_cube.vert", (size_t *)&cube_model->_VERTICES_BUFFLEN);
     if (cube_model->_VERTICES == NULL)
     {
         SRE_Log("Failed to load vertices to cube model\n", NULL);
@@ -44,7 +47,7 @@ int main(int argc, char **argv)
     }
 
     // load indices to the model
-    cube_model->_INDICES = SRE_ring0_read_uints_from_file("3D_cube.indi", (size_t *)&cube_model->_INDICES_BUFFLEN);
+    cube_model->_INDICES = SRE_ring0_read_uints_from_file("./WADs/complete_models/3D_cube.indi", (size_t *)&cube_model->_INDICES_BUFFLEN);
     if (cube_model->_INDICES == NULL)
     {
         SRE_Log("Failed to load indices to cube model\n", NULL);
@@ -56,7 +59,7 @@ int main(int argc, char **argv)
     SRE_ring0_SaveModel_TO_GLBuffers(cube_model->_VAO[cube_model->_SELECTED_BUFFER], cube_model->_VBO[cube_model->_SELECTED_BUFFER], cube_model->_EBO[cube_model->_SELECTED_BUFFER], cube_model->_VERTICES, cube_model->_INDICES, sizeof(float) * cube_model->_VERTICES_BUFFLEN, cube_model->_VERTICES_BUFFLEN, sizeof(float) * cube_model->_INDICES_BUFFLEN, cube_model->_INDICES_BUFFLEN, 0, 3, GL_FLOAT, 5 * sizeof(float), (void*)0, 1, 2, GL_FLOAT, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     
     // create the brick wall texture
-    SRE_ring0_CreateTextureFromFile("/home/lenovo/Documents/Info/GameEngine/SimpleRasterizerEngineC/examples-univ/WADs/textures/wall.jpg", cube_model->_Texture[cube_model->_SELECTED_TEXTURE]);
+    SRE_ring0_CreateTextureFromFile("./WADs/textures/wall.jpg", cube_model->_Texture[cube_model->_SELECTED_TEXTURE]);
     
     // get the uMVP uniform from our default OpenGL 3D Shader Program
     cube_model->mvpLoc = SRE_ring0_Get_Uniform_TransformationMatrix_From_ShaderProgram(cube_model->_ShaderProgram[cube_model->_SELECTED_SHADER]);

@@ -18,7 +18,8 @@ unsigned int SRE_ring0_CreateDefaultTexturedShaderProgram(void);
 unsigned int SRE_ring0_3D_CreateDefaultCornerColoredShaderProgram(void);
 unsigned int SRE_ring0_3D_CreateDefaultTexturedShaderProgram(void);
 int SRE_ring0_Get_Uniform_TransformationMatrix_From_ShaderProgram(unsigned int shaderProgram);
-
+// Creates a shader program from OpenGL Shader Code; requires vertex shader file path and fragment shader code path.
+unsigned int SRE_ring0_3D_CreateShaderProgram_From_File(char *vshaderpath, char *fshaderpath);
 
 /* OpenGL VAO / VBO / EBO manipulations */
 

@@ -289,7 +289,37 @@ unsigned int SRE_ring0_3D_CreateDefaultTexturedShaderProgram(void)
 
     return shaderProgram;
 }
+unsigned int SRE_ring0_3D_CreateShaderProgram_From_File(char *vshaderpath, char *fshaderpath)
+{
+    const char* vertexShaderSource_default = SRE_ring0_read_char_to_buffer(vshaderpath);
+    const char* fragmentShaderSource_default = SRE_ring0_read_char_to_buffer(fshaderpath);
 
+
+    // OPENGL: create the Vertex Shader
+    unsigned int vertexShader;
+    vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertexShader, 1, &vertexShaderSource_default, NULL);
+    glCompileShader(vertexShader);
+
+    // OPENGL: create the Fragment Shader
+    unsigned int fragmentShader;
+    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragmentShader, 1, &fragmentShaderSource_default, NULL);
+    glCompileShader(fragmentShader);
+
+    // OPENGL: shader program
+    unsigned int shaderProgram;
+    shaderProgram = glCreateProgram();
+    glAttachShader(shaderProgram, vertexShader);
+    glAttachShader(shaderProgram, fragmentShader);
+    glLinkProgram(shaderProgram);
+    
+    // OPENGL: clean up things and return the shader program
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+
+    return shaderProgram;
+}
 
 /* OpenGL VAO / VBO / EBO manipulations */
 

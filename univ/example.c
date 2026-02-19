@@ -34,6 +34,10 @@ int main(int argc, char **argv)
     SRE_ring1_Append_Model_Shader(cube_model, "./WADs/complete_models/3D_cube");
     cube_model->_SELECTED_SHADER = 0;
 
+    // create the 3D cube's shape (vertices, indices, GLBuffers, etc...)
+    SRE_ring1_Append_Model_VerticesAndIndices(cube_model, "./WADs/complete_models/3D_cube");
+
+/*
     // load vertices to the model
     cube_model->_VERTICES = SRE_ring0_read_floats_from_file("./WADs/complete_models/3D_cube.vert", (size_t *)&cube_model->_VERTICES_BUFFLEN);
     if (cube_model->_VERTICES == NULL)
@@ -53,10 +57,11 @@ int main(int argc, char **argv)
 
     // save vertices and indices to buffers
     SRE_ring0_SaveModel_TO_GLBuffers(cube_model->_VAO[cube_model->_SELECTED_BUFFER], cube_model->_VBO[cube_model->_SELECTED_BUFFER], cube_model->_EBO[cube_model->_SELECTED_BUFFER], cube_model->_VERTICES, cube_model->_INDICES, sizeof(float) * cube_model->_VERTICES_BUFFLEN, cube_model->_VERTICES_BUFFLEN, sizeof(float) * cube_model->_INDICES_BUFFLEN, cube_model->_INDICES_BUFFLEN, 0, 3, GL_FLOAT, 5 * sizeof(float), (void*)0, 1, 2, GL_FLOAT, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    
+    */
+
     // create the brick wall texture
     SRE_ring0_CreateTextureFromFile("./WADs/textures/wall.jpg", cube_model->_Texture[cube_model->_SELECTED_TEXTURE]);
-    
+
     // get the uMVP uniform from our default OpenGL 3D Shader Program
     cube_model->mvpLoc = SRE_ring0_Get_Uniform_TransformationMatrix_From_ShaderProgram(cube_model->_ShaderProgram[cube_model->_SELECTED_SHADER]);
 

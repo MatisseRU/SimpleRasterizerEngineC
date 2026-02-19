@@ -395,3 +395,32 @@ void SRE_ring1_Append_Model_Shader(SRE_ring1_Model *model, const char *shader_pa
         SRE_Log(" to a model.\n", NULL);
     }
 }
+
+void SRE_ring1_Append_Model_VerticesAndIndices(SRE_ring1_Model *model, const char *shape_path)
+{
+
+    char vert_path[8192];
+    char indi_path[8192];
+
+    strncpy(vert_path, shape_path, 8186);
+    strncpy(indi_path, shape_path, 8186);
+    strcat(vert_path, ".vert");
+    strcat(indi_path, ".indi");
+
+    // load vertices to the model
+    model->_VERTICES = SRE_ring0_read_floats_from_file(vert_path, (size_t *)&model->_VERTICES_BUFFLEN);
+    if (model->_VERTICES == NULL)
+    {
+        SRE_Log("Failed to load vertices to model\n", NULL);
+    }
+
+    // load indices to the model
+    model->_INDICES = SRE_ring0_read_uints_from_file(indi_path, (size_t *)&model->_INDICES_BUFFLEN);
+    if (model->_INDICES == NULL)
+    {
+        SRE_Log("Failed to load indices to model\n", NULL);
+    }
+
+    // save vertices and indices to buffers
+    SRE_ring0_SaveModel_TO_GLBuffers(model->_VAO[model->_SELECTED_BUFFER], model->_VBO[model->_SELECTED_BUFFER], model->_EBO[model->_SELECTED_BUFFER], model->_VERTICES, model->_INDICES, sizeof(float) * model->_VERTICES_BUFFLEN, model->_VERTICES_BUFFLEN, sizeof(float) * model->_INDICES_BUFFLEN, model->_INDICES_BUFFLEN, 0, 3, GL_FLOAT, 5 * sizeof(float), (void*)0, 1, 2, GL_FLOAT, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+}

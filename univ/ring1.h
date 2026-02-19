@@ -112,8 +112,9 @@ SRE_ring1_Model *SRE_ring1_Create_Model_Object(float x_pos, float y_pos, float z
 
 void SRE_ring1_Destroy_Model_Object(SRE_ring1_Model *model);
 
-// TO FINISH: append a shader to the shader buffer of an object, you can either use a path to a valid OpenGL Shading Language code (vertex and fragment shaders must be in the same directory !!), or the name of a default shader. DO NOT SPECIFY FILE EXTENTIONS !!
+// Append a shader to the shader buffer of an object, you can either use a path to a valid OpenGL Shading Language code (vertex and fragment shaders must be in the same directory !!), or the name of a default shader. DO NOT SPECIFY FILE EXTENTIONS !!
 void SRE_ring1_Append_Model_Shader(SRE_ring1_Model *model, const char *shader_path);
-
+// Append vertices and indices, also setup correctly the VAO and EBO (vertices and indices must be in the same directory !!). DO NOT SPECIFY FILE EXTENTIONS !!
+void SRE_ring1_Append_Model_VerticesAndIndices(SRE_ring1_Model *model, const char *shape_path);
 
 #endif

@@ -13,21 +13,21 @@
 #define _SRE_MAX_GL_SHADERS 8
 #define _SRE_MAX_GL_TEXTURES 8
 
-extern SDL_Window *mainWindow;
-extern SDL_GLContext mainWindowGL_ctx;
+extern SDL_Window *SRE_ring1_mainWindow;
+extern SDL_GLContext SRE_ring1_mainWindowGL_ctx;
 
 
 
 /* Basic Engine setup functions */
 // setup the basic necessary to start up the engine (setup SDL, GLAD, create window, context, etc...)
-int SRE_Init_Engine(int depth_size, int multi_samples, int w_window, int h_window);
-void SRE_Exit_Engine();
+int SRE_ring1_Init_Engine(int depth_size, int multi_samples, int w_window, int h_window);
+void SRE_ring1_Exit_Engine();
 
 
 /* Custom data types and "classes" */
 
 // the rendering parameters
-typedef struct SRE_Projection
+typedef struct SRE_ring1_Projection
 {
     float fov; // use glm_rad() to convert to rads
     float hightScreen, widthScreen;
@@ -35,10 +35,10 @@ typedef struct SRE_Projection
 
     mat4 projection_matrix;
 
-    void (*update)(struct SRE_Projection *self);
-} SRE_Projection;
+    void (*update)(struct SRE_ring1_Projection *self);
+} SRE_ring1_Projection;
 // the camera
-typedef struct SRE_View
+typedef struct SRE_ring1_View
 {
     float xPos, yPos, zPos;
     float xLook, yLook, zLook;
@@ -46,10 +46,10 @@ typedef struct SRE_View
 
     mat4 view_matrix;
 
-    void (*update)(struct SRE_View *self);
-} SRE_View;
+    void (*update)(struct SRE_ring1_View *self);
+} SRE_ring1_View;
 // an object / caracter / whatever thing in the scene
-typedef struct SRE_Model
+typedef struct SRE_ring1_Model
 {
     // local positions / rotations / scaling
     // _
@@ -83,32 +83,36 @@ typedef struct SRE_Model
     GLuint _Texture[_SRE_MAX_GL_TEXTURES];
 
 
-    void (*update)(struct SRE_Model *self);
-} SRE_Model;
+    void (*update)(struct SRE_ring1_Model *self);
+} SRE_ring1_Model;
 
 
 
 
 /* methods */
 
-void SRE_Update_Transformation_Matrix(int mvpLoc, SRE_Model m, SRE_View v, SRE_Projection p);
+void SRE_ring1_Update_Transformation_Matrix(int mvpLoc, SRE_ring1_Model m, SRE_ring1_View v, SRE_ring1_Projection p);
 
 
 // update 3D context Projection matrix
-void _SRE_Projection_do_Set_Settings(SRE_Projection *self);
+void _SRE_ring1_Projection_do_Set_Settings(SRE_ring1_Projection *self);
 // place the camera by updating the View matrix
-void _SRE_View_do_Place_At(SRE_View *self);
+void _SRE_ring1_View_do_Place_At(SRE_ring1_View *self);
 // place the object model by updating the Model matrix
-void _SRE_Model_do_Place_At(SRE_Model *self);
+void _SRE_ring1_Model_do_Place_At(SRE_ring1_Model *self);
 
 
 
 /* Constructors */
 
-SRE_Projection *SRE_Create_Projection_Object(float fov_degrees, float width_screen, float hight_screen, float close_distance, float far_distance);
-SRE_View *SRE_Create_View_Object(float x_pos, float y_pos, float z_pos, float x_look, float y_look, float z_look, float x_top, float y_top, float z_top);
-SRE_Model *SRE_Create_Model_Object(float x_pos, float y_pos, float z_pos, float x_rotation_angle_degrees, float y_rotation_angle_degrees, float z_rotation_angle_degrees, float x_scale, float y_scale, float z_scale);
+SRE_ring1_Projection *SRE_ring1_Create_Projection_Object(float fov_degrees, float width_screen, float hight_screen, float close_distance, float far_distance);
+SRE_ring1_View *SRE_ring1_Create_View_Object(float x_pos, float y_pos, float z_pos, float x_look, float y_look, float z_look, float x_top, float y_top, float z_top);
+SRE_ring1_Model *SRE_ring1_Create_Model_Object(float x_pos, float y_pos, float z_pos, float x_rotation_angle_degrees, float y_rotation_angle_degrees, float z_rotation_angle_degrees, float x_scale, float y_scale, float z_scale);
 
-void SRE_Destroy_Model_Object(SRE_Model *model);
+void SRE_ring1_Destroy_Model_Object(SRE_ring1_Model *model);
+
+// TO FINISH: append a shader to the shader buffer of an object, you can either use a path to a valid OpenGL Shading Language code, or the name of a default shader. DO NOT SPECIFY FILE EXTENTIONS
+int SRE_ring1_Create_Model_Shader(SRE_ring1_Model *model, const char *shader_path);
+
 
 #endif

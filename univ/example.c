@@ -10,33 +10,33 @@ int main(int argc, char **argv)
 
 
 
-    if (SRE_Init_Engine(24, 2, 800, 600) < 0)
+    if (SRE_ring1_Init_Engine(24, 2, 800, 600) < 0)
     {
         SRE_Log("Error while initialising engine\n", NULL);
         return -1;
     }
 
-    SRE_3D_ExportDefaultTexturedCube();
+    SRE_ring0_3D_ExportDefaultTexturedCube();
 
 
     /* RECTANGLE */
 
     // create a 3D Projection matrix object
-    SRE_Projection *projection_context = SRE_Create_Projection_Object(45.0f, 800.0f, 600.0f, 0.1f, 100.0f);
+    SRE_ring1_Projection *projection_context = SRE_ring1_Create_Projection_Object(45.0f, 800.0f, 600.0f, 0.1f, 100.0f);
 
     // create a 3D Camera matrix object
-    SRE_View *camera = SRE_Create_View_Object(0.0f, 0.0f, 3.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+    SRE_ring1_View *camera = SRE_ring1_Create_View_Object(0.0f, 0.0f, 3.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
 
     // create a 3D Tetrahedron matrix object
-    SRE_Model *cube_model = SRE_Create_Model_Object(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
+    SRE_ring1_Model *cube_model = SRE_ring1_Create_Model_Object(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
 
     // create the default shader program
     cube_model->_SELECTED_SHADER = 0;
-    cube_model->_ShaderProgram[cube_model->_SELECTED_SHADER] = SRE_3D_CreateDefaultTexturedShaderProgram();
+    cube_model->_ShaderProgram[cube_model->_SELECTED_SHADER] = SRE_ring0_3D_CreateDefaultTexturedShaderProgram();
     cube_model->_SHADER_PROGRAM_BUFFLEN = 1;
 
     // load vertices to the model
-    cube_model->_VERTICES = read_floats_from_file("3D_cube.vert", (size_t *)&cube_model->_VERTICES_BUFFLEN);
+    cube_model->_VERTICES = SRE_ring0_read_floats_from_file("3D_cube.vert", (size_t *)&cube_model->_VERTICES_BUFFLEN);
     if (cube_model->_VERTICES == NULL)
     {
         SRE_Log("Failed to load vertices to cube model\n", NULL);
@@ -44,7 +44,7 @@ int main(int argc, char **argv)
     }
 
     // load indices to the model
-    cube_model->_INDICES = read_uints_from_file("3D_cube.indi", (size_t *)&cube_model->_INDICES_BUFFLEN);
+    cube_model->_INDICES = SRE_ring0_read_uints_from_file("3D_cube.indi", (size_t *)&cube_model->_INDICES_BUFFLEN);
     if (cube_model->_INDICES == NULL)
     {
         SRE_Log("Failed to load indices to cube model\n", NULL);
@@ -53,13 +53,13 @@ int main(int argc, char **argv)
 
 
     // save vertices and indices to buffers
-    SRE_SaveModel_TO_GLBuffers(cube_model->_VAO[cube_model->_SELECTED_BUFFER], cube_model->_VBO[cube_model->_SELECTED_BUFFER], cube_model->_EBO[cube_model->_SELECTED_BUFFER], cube_model->_VERTICES, cube_model->_INDICES, sizeof(float) * cube_model->_VERTICES_BUFFLEN, cube_model->_VERTICES_BUFFLEN, sizeof(float) * cube_model->_INDICES_BUFFLEN, cube_model->_INDICES_BUFFLEN, 0, 3, GL_FLOAT, 5 * sizeof(float), (void*)0, 1, 2, GL_FLOAT, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    SRE_ring0_SaveModel_TO_GLBuffers(cube_model->_VAO[cube_model->_SELECTED_BUFFER], cube_model->_VBO[cube_model->_SELECTED_BUFFER], cube_model->_EBO[cube_model->_SELECTED_BUFFER], cube_model->_VERTICES, cube_model->_INDICES, sizeof(float) * cube_model->_VERTICES_BUFFLEN, cube_model->_VERTICES_BUFFLEN, sizeof(float) * cube_model->_INDICES_BUFFLEN, cube_model->_INDICES_BUFFLEN, 0, 3, GL_FLOAT, 5 * sizeof(float), (void*)0, 1, 2, GL_FLOAT, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     
     // create the brick wall texture
-    SRE_CreateTextureFromFile("/home/lenovo/Documents/Info/GameEngine/SimpleRasterizerEngineC/examples-univ/WADs/textures/wall.jpg", cube_model->_Texture[cube_model->_SELECTED_TEXTURE]);
+    SRE_ring0_CreateTextureFromFile("/home/lenovo/Documents/Info/GameEngine/SimpleRasterizerEngineC/examples-univ/WADs/textures/wall.jpg", cube_model->_Texture[cube_model->_SELECTED_TEXTURE]);
     
     // get the uMVP uniform from our default OpenGL 3D Shader Program
-    cube_model->mvpLoc = SRE_Get_Uniform_TransformationMatrix_From_ShaderProgram(cube_model->_ShaderProgram[cube_model->_SELECTED_SHADER]);
+    cube_model->mvpLoc = SRE_ring0_Get_Uniform_TransformationMatrix_From_ShaderProgram(cube_model->_ShaderProgram[cube_model->_SELECTED_SHADER]);
 
 
 
@@ -97,7 +97,7 @@ int main(int argc, char **argv)
 
 
         // Update Viewport
-        SDL_GetWindowSize(mainWindow, &w, &h);
+        SDL_GetWindowSize(SRE_ring1_mainWindow, &w, &h);
         glViewport(0, 0, w, h);
         projection_context->widthScreen = (float)w;
         projection_context->hightScreen = (float)h;
@@ -143,7 +143,7 @@ int main(int argc, char **argv)
         }
 
         // update the whole 3D matrix
-        SRE_Update_Transformation_Matrix(cube_model->mvpLoc, *cube_model, *camera, *projection_context);
+        SRE_ring1_Update_Transformation_Matrix(cube_model->mvpLoc, *cube_model, *camera, *projection_context);
 
 
         // OPENGL: set a grey background
@@ -156,7 +156,7 @@ int main(int argc, char **argv)
         glDrawElements(GL_TRIANGLES, cube_model->_INDICES_BUFFLEN, GL_UNSIGNED_INT, 0);
 
         // SDL: render it.
-        SDL_GL_SwapWindow(mainWindow);
+        SDL_GL_SwapWindow(SRE_ring1_mainWindow);
 
 
         // SDL: wait
@@ -173,9 +173,9 @@ int main(int argc, char **argv)
 
 
     // Proper exit...
-    SRE_Destroy_Model_Object(cube_model);
+    SRE_ring1_Destroy_Model_Object(cube_model);
     free(camera);
     free(projection_context);
-    SRE_Exit_Engine();
+    SRE_ring1_Exit_Engine();
     return 0;
 }

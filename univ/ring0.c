@@ -9,7 +9,7 @@ uint8_t SRE_DEBUGGING;
 
 /* OpenGL Shaders */
 
-unsigned int SRE_CreateDefaultShaderProgram(void)
+unsigned int SRE_ring0_CreateDefaultShaderProgram(void)
 {
     /*
         Only requires to pass the xyz coordinates of the vertices to an OpenGL vec3 vertex attribute at layout location 0.
@@ -74,7 +74,7 @@ unsigned int SRE_CreateDefaultShaderProgram(void)
 
     return shaderProgram;
 }
-unsigned int SRE_CreateDefaultCornerColoredShaderProgram(void)
+unsigned int SRE_ring0_CreateDefaultCornerColoredShaderProgram(void)
 {
     /*
         Requires to pass the xyz coordinates and the respective color of each vertices to 2 OpenGL vec3 vertex attribute at layout location 0 for position and location 1 for color.
@@ -125,7 +125,7 @@ unsigned int SRE_CreateDefaultCornerColoredShaderProgram(void)
 
     return shaderProgram;
 }
-unsigned int SRE_3D_CreateDefaultCornerColoredShaderProgram(void)
+unsigned int SRE_ring0_3D_CreateDefaultCornerColoredShaderProgram(void)
 {
     const char* vertexShaderSource_default =
     "#version 330 core\n"
@@ -174,11 +174,11 @@ unsigned int SRE_3D_CreateDefaultCornerColoredShaderProgram(void)
 
     return shaderProgram;
 }
-int SRE_Get_Uniform_TransformationMatrix_From_ShaderProgram(unsigned int shaderProgram)
+int SRE_ring0_Get_Uniform_TransformationMatrix_From_ShaderProgram(unsigned int shaderProgram)
 {
     return glGetUniformLocation(shaderProgram, "uMVP");
 }
-unsigned int SRE_CreateDefaultTexturedShaderProgram(void)
+unsigned int SRE_ring0_CreateDefaultTexturedShaderProgram(void)
 {
     /*
         Requires to pass the xyz coordinates of the vertices to an OpenGL vec3 vertex attribute at layout location 0,
@@ -233,7 +233,7 @@ unsigned int SRE_CreateDefaultTexturedShaderProgram(void)
 
     return shaderProgram;
 }
-unsigned int SRE_3D_CreateDefaultTexturedShaderProgram(void)
+unsigned int SRE_ring0_3D_CreateDefaultTexturedShaderProgram(void)
 {
     /*
         Requires to pass the xyz coordinates of the vertices to an OpenGL vec3 vertex attribute at layout location 0,
@@ -293,7 +293,7 @@ unsigned int SRE_3D_CreateDefaultTexturedShaderProgram(void)
 
 /* OpenGL VAO / VBO / EBO manipulations */
 
-int SRE_SaveModel_TO_GLBuffers(GLuint VAO, GLuint VBO, GLuint EBO, float *vertices, unsigned int *indices, GLsizeiptr vert_size, uint16_t vert_nbr, GLsizeiptr ind_size, uint16_t ind_nbr, unsigned int vert_pos_layout_in_shader, int vert_pos_size_per_point, GLenum vert_pos_data_type, GLsizei vert_pos_stride, const void *vert_pos_pointer, unsigned int vert_color_layout_in_shader, int vert_color_size_per_point, GLenum vert_color_data_type, GLsizei vert_color_stride, const void *vert_color_pointer)
+int SRE_ring0_SaveModel_TO_GLBuffers(GLuint VAO, GLuint VBO, GLuint EBO, float *vertices, unsigned int *indices, GLsizeiptr vert_size, uint16_t vert_nbr, GLsizeiptr ind_size, uint16_t ind_nbr, unsigned int vert_pos_layout_in_shader, int vert_pos_size_per_point, GLenum vert_pos_data_type, GLsizei vert_pos_stride, const void *vert_pos_pointer, unsigned int vert_color_layout_in_shader, int vert_color_size_per_point, GLenum vert_color_data_type, GLsizei vert_color_stride, const void *vert_color_pointer)
 {
     // Bind VAO and VBO and EBO
     // VAO
@@ -361,7 +361,7 @@ int SRE_SaveModel_TO_GLBuffers(GLuint VAO, GLuint VBO, GLuint EBO, float *vertic
 
 /* OpenGL texture manipulations */
 
-int SRE_CreateTextureFromFile(const char *texture_file_path, GLuint gl_texture_id)
+int SRE_ring0_CreateTextureFromFile(const char *texture_file_path, GLuint gl_texture_id)
 {
     // Load texture
     int width, height, nrChannels;
@@ -423,7 +423,7 @@ int SRE_CreateTextureFromFile(const char *texture_file_path, GLuint gl_texture_i
 
 /* Reads/writes */
 
-float* read_floats_from_file(const char* path, size_t* outCount)
+float* SRE_ring0_read_floats_from_file(const char* path, size_t* outCount)
 {
     FILE* f = fopen(path, "r");
     if (!f)
@@ -468,7 +468,7 @@ float* read_floats_from_file(const char* path, size_t* outCount)
     *outCount = count;
     return buffer;
 }
-int write_floats_to_file(const char* path, const float* data, size_t count)
+int SRE_ring0_write_floats_to_file(const char* path, const float* data, size_t count)
 {
     FILE* f = fopen(path, "w");
     if (!f)
@@ -494,7 +494,7 @@ int write_floats_to_file(const char* path, const float* data, size_t count)
     fclose(f);
     return 0;
 }
-unsigned int* read_uints_from_file(const char* path, size_t* outCount)
+unsigned int* SRE_ring0_read_uints_from_file(const char* path, size_t* outCount)
 {
     FILE* f = fopen(path, "r");
     if (!f)
@@ -539,7 +539,7 @@ unsigned int* read_uints_from_file(const char* path, size_t* outCount)
     *outCount = count;
     return buffer;
 }
-int write_uints_to_file(const char* path, const unsigned int* data, size_t count)
+int SRE_ring0_write_uints_to_file(const char* path, const unsigned int* data, size_t count)
 {
     FILE* f = fopen(path, "w");
     if (!f)
@@ -563,7 +563,7 @@ int write_uints_to_file(const char* path, const unsigned int* data, size_t count
     fclose(f);
     return 0;
 }
-char *read_char_to_buffer(const char* path)
+char *SRE_ring0_read_char_to_buffer(const char* path)
 {
     FILE* f = fopen(path, "rb");
     if (!f) {
@@ -626,7 +626,7 @@ int SRE_Log(const char *in_buffer, FILE *auxiliary_output)
 
 /* example shapes */
 // exports the vertices / indices of a 3D model cube to a file you can open and load the model from.
-int SRE_3D_ExportDefaultTexturedCube(void)
+int SRE_ring0_3D_ExportDefaultTexturedCube(void)
 {
     unsigned int nbr_of_vertices = 24*5;
     float vertices[24*5] =
@@ -679,13 +679,13 @@ int SRE_3D_ExportDefaultTexturedCube(void)
         20,21,22,22,23,20        // bottom
     };
 
-    if (write_floats_to_file("3D_cube.vert", vertices, nbr_of_vertices) < 0)
+    if (SRE_ring0_write_floats_to_file("3D_cube.vert", vertices, nbr_of_vertices) < 0)
     {
         SRE_Log("Failed to write to file cube vertices\n", NULL);
         return -1;
     }
 
-    if (write_uints_to_file("3D_cube.indi", indices, nbr_of_indices))
+    if (SRE_ring0_write_uints_to_file("3D_cube.indi", indices, nbr_of_indices))
     {
         SRE_Log("Failed to write to file cube indices\n", NULL);
         return -1;

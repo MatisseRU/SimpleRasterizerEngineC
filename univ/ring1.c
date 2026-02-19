@@ -2,14 +2,14 @@
 
 /* GLOBAL VARIABLES */
 
-SDL_Window *mainWindow;
-SDL_GLContext mainWindowGL_ctx;
+SDL_Window *SRE_ring1_mainWindow;
+SDL_GLContext SRE_ring1_mainWindowGL_ctx;
 
 
 
 /* Basic engine setup functions */
 
-int SRE_Init_Engine(int depth_size, int multi_samples, int w_window, int h_window)
+int SRE_ring1_Init_Engine(int depth_size, int multi_samples, int w_window, int h_window)
 {
     // SDL
 
@@ -104,8 +104,8 @@ int SRE_Init_Engine(int depth_size, int multi_samples, int w_window, int h_windo
 
     // SDL
     
-    mainWindow = SDL_CreateWindow("Main Test", w_window, h_window, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);// default 800x600
-    if (mainWindow == NULL)
+    SRE_ring1_mainWindow = SDL_CreateWindow("Main Test", w_window, h_window, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);// default 800x600
+    if (SRE_ring1_mainWindow == NULL)
     {
         SRE_Log("Failed at SDL_CreateWindow:\n", NULL);
         SRE_Log(SDL_GetError(), NULL);
@@ -118,13 +118,13 @@ int SRE_Init_Engine(int depth_size, int multi_samples, int w_window, int h_windo
     
     // OPENGL
 
-    mainWindowGL_ctx = SDL_GL_CreateContext(mainWindow);
-    if (mainWindowGL_ctx == NULL)
+    SRE_ring1_mainWindowGL_ctx = SDL_GL_CreateContext(SRE_ring1_mainWindow);
+    if (SRE_ring1_mainWindowGL_ctx == NULL)
     {
         SRE_Log("Failed at SDL_GL_CreateContext:\n", NULL);
         SRE_Log(SDL_GetError(), NULL);
         SRE_Log("\n", NULL);
-        SDL_DestroyWindow(mainWindow);
+        SDL_DestroyWindow(SRE_ring1_mainWindow);
         SDL_Quit();
         return -1;
     }
@@ -179,12 +179,12 @@ int SRE_Init_Engine(int depth_size, int multi_samples, int w_window, int h_windo
 
     return 0;
 }
-void SRE_Exit_Engine()
+void SRE_ring1_Exit_Engine()
 {
     // delete model objects
 
     // destroy the window
-    SDL_DestroyWindow(mainWindow);
+    SDL_DestroyWindow(SRE_ring1_mainWindow);
     SDL_Quit();
 
     return;
@@ -193,19 +193,19 @@ void SRE_Exit_Engine()
 
 /* methods */
 
-void SRE_Update_Transformation_Matrix(int mvpLoc, SRE_Model m, SRE_View v, SRE_Projection p)
+void SRE_ring1_Update_Transformation_Matrix(int mvpLoc, SRE_ring1_Model m, SRE_ring1_View v, SRE_ring1_Projection p)
 {
     mat4 mvp;
     glm_mat4_mulN((mat4 *[]){&p.projection_matrix, &v.view_matrix, &m.model_matrix}, 3, mvp);
     glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, (float *)mvp);
 }
 // update 3D context Projection matrix
-void _SRE_Projection_do_Set_Settings(SRE_Projection *self)
+void _SRE_ring1_Projection_do_Set_Settings(SRE_ring1_Projection *self)
 {
     glm_perspective(self->fov, self->widthScreen / self->hightScreen, self->close, self->far, self->projection_matrix);
 }
 // place the camera by updating the View matrix
-void _SRE_View_do_Place_At(SRE_View *self)
+void _SRE_ring1_View_do_Place_At(SRE_ring1_View *self)
 {
     glm_lookat((vec3){self->xPos, self->yPos, self->zPos},
                (vec3){self->xLook, self->yLook, self->zLook},
@@ -213,7 +213,7 @@ void _SRE_View_do_Place_At(SRE_View *self)
                self->view_matrix);
 }
 // place the object model by updating the Model matrix
-void _SRE_Model_do_Place_At(SRE_Model *self)
+void _SRE_ring1_Model_do_Place_At(SRE_ring1_Model *self)
 {
     glm_mat4_identity(self->model_matrix);
     glm_rotate(self->model_matrix, glm_rad(self->xRotAngle), (vec3){1, 0, 0});
@@ -226,16 +226,16 @@ void _SRE_Model_do_Place_At(SRE_Model *self)
 
 /* Constructors */
 
-SRE_Projection *SRE_Create_Projection_Object(float fov_degrees, float width_screen, float hight_screen, float close_distance, float far_distance)
+SRE_ring1_Projection *SRE_ring1_Create_Projection_Object(float fov_degrees, float width_screen, float hight_screen, float close_distance, float far_distance)
 {
-    SRE_Projection* projection = malloc(sizeof(SRE_Projection));
+    SRE_ring1_Projection* projection = malloc(sizeof(SRE_ring1_Projection));
     if(projection == NULL)
     {
         SRE_Log("Failed to allocate memory for object\n", NULL);
         return NULL;
     }
 
-    projection->update = _SRE_Projection_do_Set_Settings;
+    projection->update = _SRE_ring1_Projection_do_Set_Settings;
 
     projection->fov = glm_rad(fov_degrees);
     projection->widthScreen = width_screen;
@@ -246,16 +246,16 @@ SRE_Projection *SRE_Create_Projection_Object(float fov_degrees, float width_scre
 
     return projection;
 }
-SRE_View *SRE_Create_View_Object(float x_pos, float y_pos, float z_pos, float x_look, float y_look, float z_look, float x_top, float y_top, float z_top)
+SRE_ring1_View *SRE_ring1_Create_View_Object(float x_pos, float y_pos, float z_pos, float x_look, float y_look, float z_look, float x_top, float y_top, float z_top)
 {
-    SRE_View* view = malloc(sizeof(SRE_View));
+    SRE_ring1_View* view = malloc(sizeof(SRE_ring1_View));
     if(view == NULL)
     {
         SRE_Log("Failed to allocate memory for object\n", NULL);
         return NULL;
     }
 
-    view->update = _SRE_View_do_Place_At;
+    view->update = _SRE_ring1_View_do_Place_At;
 
     view->xPos = x_pos;
     view->yPos = y_pos;
@@ -270,16 +270,16 @@ SRE_View *SRE_Create_View_Object(float x_pos, float y_pos, float z_pos, float x_
 
     return view;
 }
-SRE_Model *SRE_Create_Model_Object(float x_pos, float y_pos, float z_pos, float x_rotation_angle_degrees, float y_rotation_angle_degrees, float z_rotation_angle_degrees, float x_scale, float y_scale, float z_scale)
+SRE_ring1_Model *SRE_ring1_Create_Model_Object(float x_pos, float y_pos, float z_pos, float x_rotation_angle_degrees, float y_rotation_angle_degrees, float z_rotation_angle_degrees, float x_scale, float y_scale, float z_scale)
 {
-    SRE_Model* model = malloc(sizeof(SRE_Model));
+    SRE_ring1_Model* model = malloc(sizeof(SRE_ring1_Model));
     if(model == NULL)
     {
         SRE_Log("Failed to allocate memory for object\n", NULL);
         return NULL;
     }
 
-    model->update = _SRE_Model_do_Place_At;
+    model->update = _SRE_ring1_Model_do_Place_At;
 
     model->xPos = x_pos;
     model->yPos = y_pos;
@@ -311,7 +311,7 @@ SRE_Model *SRE_Create_Model_Object(float x_pos, float y_pos, float z_pos, float 
     return model;
 }
 
-void SRE_Destroy_Model_Object(SRE_Model *model)
+void SRE_ring1_Destroy_Model_Object(SRE_ring1_Model *model)
 {
     // delete VAO / VBO / EBO
     glDeleteVertexArrays(_SRE_MAX_GL_BUFFERS, model->_VAO);
@@ -335,3 +335,40 @@ void SRE_Destroy_Model_Object(SRE_Model *model)
     free(model);
 }
 
+int SRE_ring1_Create_Model_Shader(SRE_ring1_Model *model, const char *shader_path)
+{
+    // default shaders
+    if (strcmp(shader_path, "DefaultShaderProgram") == 0)
+    {
+        model->_SELECTED_SHADER = model->_SHADER_PROGRAM_BUFFLEN;
+        model->_ShaderProgram[model->_SELECTED_SHADER] = SRE_ring0_CreateDefaultShaderProgram();
+        model->_SHADER_PROGRAM_BUFFLEN += 1;
+    }
+    if (strcmp(shader_path, "DefaultCornerColoredShaderProgram") == 0)
+    {
+        model->_SELECTED_SHADER = model->_SHADER_PROGRAM_BUFFLEN;
+        model->_ShaderProgram[model->_SELECTED_SHADER] = SRE_ring0_CreateDefaultCornerColoredShaderProgram();
+        model->_SHADER_PROGRAM_BUFFLEN += 1;
+    }
+    if (strcmp(shader_path, "DefaultTexturedShaderProgram") == 0)
+    {
+        model->_SELECTED_SHADER = model->_SHADER_PROGRAM_BUFFLEN;
+        model->_ShaderProgram[model->_SELECTED_SHADER] = SRE_ring0_CreateDefaultTexturedShaderProgram();
+        model->_SHADER_PROGRAM_BUFFLEN += 1;
+    }
+    if (strcmp(shader_path, "3D_DefaultCornerColoredShaderProgram") == 0)
+    {
+        model->_SELECTED_SHADER = model->_SHADER_PROGRAM_BUFFLEN;
+        model->_ShaderProgram[model->_SELECTED_SHADER] = SRE_ring0_3D_CreateDefaultCornerColoredShaderProgram();
+        model->_SHADER_PROGRAM_BUFFLEN += 1;
+    }
+    if (strcmp(shader_path, "3D_DefaultTexturedShaderProgram") == 0)
+    {
+        model->_SELECTED_SHADER = model->_SHADER_PROGRAM_BUFFLEN;
+        model->_ShaderProgram[model->_SELECTED_SHADER] = SRE_ring0_3D_CreateDefaultTexturedShaderProgram();
+        model->_SHADER_PROGRAM_BUFFLEN += 1;
+    }
+
+    // TODO
+
+}

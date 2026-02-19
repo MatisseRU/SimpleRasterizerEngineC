@@ -33,10 +33,6 @@ int main(int argc, char **argv)
     // create the default shader program
     SRE_ring1_Append_Model_Shader(cube_model, "./WADs/complete_models/3D_cube");
     cube_model->_SELECTED_SHADER = 0;
-    /*
-    cube_model->_ShaderProgram[cube_model->_SELECTED_SHADER] = SRE_ring0_3D_CreateDefaultTexturedShaderProgram();
-    cube_model->_SHADER_PROGRAM_BUFFLEN = 1;
-    */
 
     // load vertices to the model
     cube_model->_VERTICES = SRE_ring0_read_floats_from_file("./WADs/complete_models/3D_cube.vert", (size_t *)&cube_model->_VERTICES_BUFFLEN);

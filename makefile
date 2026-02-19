@@ -1,8 +1,8 @@
 TARGET = build/main.out
-TESTTARGET = build/tests.out
+TESTTARGET = build/example.out
 
 SRC = ./univ/main.c ./univ/glad.c ./univ/ring0.c ./univ/ring1.c ./univ/ring2.c
-SRCTEST = ./univ/tests.c ./univ/glad.c ./univ/ring0.c ./univ/ring1.c ./univ/ring2.c
+SRCTEST = ./univ/example.c ./univ/glad.c ./univ/ring0.c ./univ/ring1.c ./univ/ring2.c
 
 CFLAGS = -Wall -Wextra -O2 `pkg-config --cflags sdl3` ${EXTRA_CFLAGS}
 LDFLAGS = `pkg-config --libs sdl3` -ldl -lm -lGL

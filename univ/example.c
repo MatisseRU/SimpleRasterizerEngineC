@@ -74,9 +74,6 @@ int main(int argc, char **argv)
     // bind GL_TEXTURE0 to our brick wall texture
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, cube_model->_Texture[cube_model->_SELECTED_TEXTURE]);
-    // get the 3D matrix uniform
-    int uniLoc = glGetUniformLocation(cube_model->_ShaderProgram[cube_model->_SELECTED_SHADER], "ourTexture");
-    glUniform1i(uniLoc, 0);
 
 
     SDL_Event ev;

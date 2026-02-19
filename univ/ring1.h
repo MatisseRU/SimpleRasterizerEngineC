@@ -11,7 +11,7 @@
 #define _SRE_MAX_GL_BUFFERS 8
 #define _SRE_MAX_GL_TEXTURES 8
 #define _SRE_MAX_GL_SHADERS 8
-#define _SRE_MAX_GL_TEXTURES 8
+#define _SRE_MAX_GL_UNIFORMS 8
 
 extern SDL_Window *SRE_ring1_mainWindow;
 extern SDL_GLContext SRE_ring1_mainWindowGL_ctx;
@@ -76,7 +76,8 @@ typedef struct SRE_ring1_Model
     uint32_t _SHADER_PROGRAM_BUFFLEN;
     uint32_t _SELECTED_SHADER;
     GLuint _ShaderProgram[_SRE_MAX_GL_SHADERS];
-    int mvpLoc;
+    GLint mvpLoc;
+    GLint uniforms[_SRE_MAX_GL_UNIFORMS];
 
     uint32_t _TEXTURE_BUFFLEN;
     uint32_t _SELECTED_TEXTURE;

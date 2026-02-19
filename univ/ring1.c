@@ -340,32 +340,27 @@ int SRE_ring1_Create_Model_Shader(SRE_ring1_Model *model, const char *shader_pat
     // default shaders
     if (strcmp(shader_path, "DefaultShaderProgram") == 0)
     {
-        model->_SELECTED_SHADER = model->_SHADER_PROGRAM_BUFFLEN;
-        model->_ShaderProgram[model->_SELECTED_SHADER] = SRE_ring0_CreateDefaultShaderProgram();
+        model->_ShaderProgram[model->_SHADER_PROGRAM_BUFFLEN] = SRE_ring0_CreateDefaultShaderProgram();
         model->_SHADER_PROGRAM_BUFFLEN += 1;
     }
     if (strcmp(shader_path, "DefaultCornerColoredShaderProgram") == 0)
     {
-        model->_SELECTED_SHADER = model->_SHADER_PROGRAM_BUFFLEN;
-        model->_ShaderProgram[model->_SELECTED_SHADER] = SRE_ring0_CreateDefaultCornerColoredShaderProgram();
+        model->_ShaderProgram[model->_SHADER_PROGRAM_BUFFLEN] = SRE_ring0_CreateDefaultCornerColoredShaderProgram();
         model->_SHADER_PROGRAM_BUFFLEN += 1;
     }
     if (strcmp(shader_path, "DefaultTexturedShaderProgram") == 0)
     {
-        model->_SELECTED_SHADER = model->_SHADER_PROGRAM_BUFFLEN;
-        model->_ShaderProgram[model->_SELECTED_SHADER] = SRE_ring0_CreateDefaultTexturedShaderProgram();
+        model->_ShaderProgram[model->_SHADER_PROGRAM_BUFFLEN] = SRE_ring0_CreateDefaultTexturedShaderProgram();
         model->_SHADER_PROGRAM_BUFFLEN += 1;
     }
     if (strcmp(shader_path, "3D_DefaultCornerColoredShaderProgram") == 0)
     {
-        model->_SELECTED_SHADER = model->_SHADER_PROGRAM_BUFFLEN;
-        model->_ShaderProgram[model->_SELECTED_SHADER] = SRE_ring0_3D_CreateDefaultCornerColoredShaderProgram();
+        model->_ShaderProgram[model->_SHADER_PROGRAM_BUFFLEN] = SRE_ring0_3D_CreateDefaultCornerColoredShaderProgram();
         model->_SHADER_PROGRAM_BUFFLEN += 1;
     }
     if (strcmp(shader_path, "3D_DefaultTexturedShaderProgram") == 0)
     {
-        model->_SELECTED_SHADER = model->_SHADER_PROGRAM_BUFFLEN;
-        model->_ShaderProgram[model->_SELECTED_SHADER] = SRE_ring0_3D_CreateDefaultTexturedShaderProgram();
+        model->_ShaderProgram[model->_SHADER_PROGRAM_BUFFLEN] = SRE_ring0_3D_CreateDefaultTexturedShaderProgram();
         model->_SHADER_PROGRAM_BUFFLEN += 1;
     }
 

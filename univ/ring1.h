@@ -19,6 +19,7 @@
 /* Basic Engine setup functions */
 // setup the basic necessary to start up the engine (setup SDL, GLAD, create window, context, etc...)
 int SRE_ring1_Init_Engine(int depth_size, int multi_samples, int w_window, int h_window);
+int SRE_ring1_Init_Drawing(float fov, float closest_distance, float farthest_distance);
 void SRE_ring1_Exit_Engine();
 
 

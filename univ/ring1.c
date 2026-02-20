@@ -122,6 +122,9 @@ int SRE_ring1_Init_Engine(int depth_size, int multi_samples, int w_window, int h
         return -1;
     }
 
+    SRE_Main_Stack->w = w_window;
+    SRE_Main_Stack->h = h_window;
+
 
     
     // OPENGL
@@ -184,6 +187,16 @@ int SRE_ring1_Init_Engine(int depth_size, int multi_samples, int w_window, int h
     SRE_Log("\n", NULL);
 
     glViewport(0, 0, 800, 600);
+
+    return 0;
+}
+int SRE_ring1_Init_Drawing(float fov, float closest_distance, float farthest_distance)
+{
+    // create a 3D Projection matrix object
+    SRE_Main_Stack->projection_context = SRE_ring1_Create_Projection_Object(fov, SRE_Main_Stack->w, SRE_Main_Stack->h, closest_distance, farthest_distance);
+
+    // create a 3D Camera matrix object
+    SRE_Main_Stack->camera = SRE_ring1_Create_View_Object(0.0f, 0.0f, 3.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
 
     return 0;
 }

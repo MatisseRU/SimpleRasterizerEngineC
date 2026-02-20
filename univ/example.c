@@ -21,12 +21,9 @@ int main(int argc, char **argv)
 
     /* RECTANGLE */
 
-    // create a 3D Projection matrix object
-    SRE_Main_Stack->projection_context = SRE_ring1_Create_Projection_Object(45.0f, 800.0f, 600.0f, 0.1f, 100.0f);
-
-    // create a 3D Camera matrix object
-    SRE_Main_Stack->camera = SRE_ring1_Create_View_Object(0.0f, 0.0f, 3.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
-
+    // Initialize camera and projection context
+    SRE_ring1_Init_Drawing(45.0f, 0.1f, 100.0f);
+    
     // create a 3D Tetrahedron matrix object
     SRE_Main_Stack->model_list[0] = SRE_ring1_Create_Model_Object(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
 

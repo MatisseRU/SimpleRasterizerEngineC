@@ -7,7 +7,7 @@ SRE_Globals *SRE_Main_Stack;
 
 
 
-/* Basic engine setup functions */
+/* Basic engine setup/exit functions */
 
 int SRE_ring1_Init_Engine(int depth_size, int multi_samples, int w_window, int h_window)
 {
@@ -194,15 +194,28 @@ int SRE_ring1_Init_Drawing(float fov, float closest_distance, float farthest_dis
 {
     // create a 3D Projection matrix object
     SRE_Main_Stack->projection_context = SRE_ring1_Create_Projection_Object(fov, SRE_Main_Stack->w, SRE_Main_Stack->h, closest_distance, farthest_distance);
+    SRE_Log("Successfully created the 3D projection context", NULL);
 
     // create a 3D Camera matrix object
     SRE_Main_Stack->camera = SRE_ring1_Create_View_Object(0.0f, 0.0f, 3.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+    SRE_Log("Successfully created the camera", NULL);
+
+    SRE_Main_Stack->_DRAWABLES_LIST_BUFFLEN = 0;
 
     return 0;
 }
 void SRE_ring1_Exit_Engine()
 {
     // delete model objects
+    for (uint64_t i = 0; i < SRE_Main_Stack->_DRAWABLES_LIST_BUFFLEN; i++)
+    {
+        SRE_ring1_Destroy_Model_Object(SRE_Main_Stack->drawable_list[i]);
+    }
+    
+    // delete camera
+    free(SRE_Main_Stack->camera);
+    // delete projection context
+    free(SRE_Main_Stack->projection_context);
 
     // destroy the window
     SDL_DestroyWindow(SRE_Main_Stack->mainWindow);
@@ -445,3 +458,29 @@ void SRE_ring1_Append_Model_VerticesAndIndices(SRE_ring1_Model *model, const cha
     // save vertices and indices to buffers
     SRE_ring0_SaveModel_TO_GLBuffers(model->_VAO[model->_SELECTED_BUFFER], model->_VBO[model->_SELECTED_BUFFER], model->_EBO[model->_SELECTED_BUFFER], model->_VERTICES, model->_INDICES, sizeof(float) * model->_VERTICES_BUFFLEN, model->_VERTICES_BUFFLEN, sizeof(float) * model->_INDICES_BUFFLEN, model->_INDICES_BUFFLEN, 0, 3, GL_FLOAT, 5 * sizeof(float), (void*)0, 1, 2, GL_FLOAT, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 }
+
+void SRE_ring1_Create_Full_Drawable(const char *shaders_path, const char *shape_path, const char *texture_path)
+{
+    // create a 3D Cube matrix object
+    SRE_Main_Stack->drawable_list[SRE_Main_Stack->_DRAWABLES_LIST_BUFFLEN] = SRE_ring1_Create_Model_Object(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
+
+    // create the default shader program
+    SRE_ring1_Append_Model_Shader(SRE_Main_Stack->drawable_list[SRE_Main_Stack->_DRAWABLES_LIST_BUFFLEN], shaders_path);
+    SRE_Main_Stack->drawable_list[SRE_Main_Stack->_DRAWABLES_LIST_BUFFLEN]->_SELECTED_SHADER = 0;
+
+    // create the 3D cube's shape (vertices, indices, GLBuffers, etc...)
+    SRE_ring1_Append_Model_VerticesAndIndices(SRE_Main_Stack->drawable_list[SRE_Main_Stack->_DRAWABLES_LIST_BUFFLEN], shape_path);
+
+    // create the brick wall texture
+    SRE_ring0_CreateTextureFromFile(texture_path, SRE_Main_Stack->drawable_list[SRE_Main_Stack->_DRAWABLES_LIST_BUFFLEN]->_Texture[SRE_Main_Stack->drawable_list[SRE_Main_Stack->_DRAWABLES_LIST_BUFFLEN]->_SELECTED_TEXTURE]);
+
+    // get the uMVP uniform from our default OpenGL 3D Shader Program
+    SRE_Main_Stack->drawable_list[SRE_Main_Stack->_DRAWABLES_LIST_BUFFLEN]->mvpLoc = SRE_ring0_Get_Uniform_TransformationMatrix_From_ShaderProgram(SRE_Main_Stack->drawable_list[SRE_Main_Stack->_DRAWABLES_LIST_BUFFLEN]->_ShaderProgram[SRE_Main_Stack->drawable_list[SRE_Main_Stack->_DRAWABLES_LIST_BUFFLEN]->_SELECTED_SHADER]);
+
+    // increment size counter
+    SRE_Main_Stack->_DRAWABLES_LIST_BUFFLEN += 1;
+}
+
+
+
+

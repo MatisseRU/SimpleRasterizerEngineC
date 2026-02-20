@@ -95,8 +95,8 @@ typedef struct SRE_Globals
     SRE_ring1_Projection *projection_context;
     SRE_ring1_View *camera;
 
-    SRE_ring1_Model *model_list[_SRE_MAX_OBJs_LIST];
-
+    uint64_t _DRAWABLES_LIST_BUFFLEN;
+    SRE_ring1_Model *drawable_list[_SRE_MAX_OBJs_LIST];
 } SRE_Globals;
 
 extern SRE_Globals *SRE_Main_Stack;
@@ -128,5 +128,7 @@ void SRE_ring1_Destroy_Model_Object(SRE_ring1_Model *model);
 void SRE_ring1_Append_Model_Shader(SRE_ring1_Model *model, const char *shader_path);
 // Append vertices and indices, also setup correctly the VAO and EBO (vertices and indices must be in the same directory !!). DO NOT SPECIFY FILE EXTENTIONS !!
 void SRE_ring1_Append_Model_VerticesAndIndices(SRE_ring1_Model *model, const char *shape_path);
+
+void SRE_ring1_Create_Full_Drawable(const char *shaders_path, const char *shape_path, const char *texture_path);
 
 #endif

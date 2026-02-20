@@ -410,8 +410,8 @@ void SRE_ring1_Append_Model_Shader(SRE_ring1_Model *model, const char *shader_pa
         strncpy(vshader_path, shader_path, 8183);
         strncpy(fshader_path, shader_path, 8183);
 
-        strcat(vshader_path, ".vshader");
-        strcat(fshader_path, ".fshader");
+        strcat(vshader_path, ".vert");
+        strcat(fshader_path, ".frag");
 
         model->_ShaderProgram[model->_SHADER_PROGRAM_BUFFLEN] = SRE_ring0_3D_CreateShaderProgram_From_File(vshader_path, fshader_path);
         model->_SHADER_PROGRAM_BUFFLEN += 1;
@@ -445,8 +445,8 @@ void SRE_ring1_Append_Model_VerticesAndIndices(SRE_ring1_Model *model, const cha
 
     strncpy(vert_path, shape_path, 8186);
     strncpy(indi_path, shape_path, 8186);
-    strcat(vert_path, ".vert");
-    strcat(indi_path, ".indi");
+    strcat(vert_path, ".ver");
+    strcat(indi_path, ".ind");
 
     // load vertices to the model
     model->_VERTICES = SRE_ring0_read_floats_from_file(vert_path, (size_t *)&model->_VERTICES_BUFFLEN);

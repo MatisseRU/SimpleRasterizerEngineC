@@ -33,4 +33,4 @@ Your own full scene (or game) 's code is a ring 3 layer program, which might use
 
 Any ressources used, such as textures (.jpg, .bmp, .png, ...), vertices (.vert), indices (.indi), vertex shaders (.vshader), fragment shaders (fshader) are situated in the WADs folder.
 
-Every global variable, excepted macros, such as the main window handle, OpenGL contexts, the list of drawn models, the camera, etc... are stored in a structure found at ring 0: "SRE_Globals* SRE_Main_Stack".
+Every global variable, excepted macros, such as the main window handle, OpenGL contexts, the list of drawn models, the camera, etc... are stored in a structure found at ring 1: "SRE_Globals* SRE_Main_Stack".

@@ -532,4 +532,51 @@ void SRE_ring1_Delete_Full_Drawable(SRE_ring1_Model *drawable)
     SRE_Log("Fully deleted drawable properly.\n", NULL);
 }
 
+int SRE_ring1_Default_Draw_Update(uint16_t framerate)
+{
+    // framerate control
+    const uint64_t targetFrameTime = 1000 / framerate;
+    uint64_t elapsed, frameStart;
+    frameStart = SDL_GetTicks();// Tstart
 
+    // Update Viewport
+    SDL_GetWindowSize(SRE_Main_Stack->mainWindow, &SRE_Main_Stack->w, &SRE_Main_Stack->h);
+    glViewport(0, 0, SRE_Main_Stack->w, SRE_Main_Stack->h);
+    SRE_Main_Stack->projection_context->widthScreen = (float)SRE_Main_Stack->w;
+    SRE_Main_Stack->projection_context->hightScreen = (float)SRE_Main_Stack->h;
+    SRE_Main_Stack->projection_context->update(SRE_Main_Stack->projection_context);
+
+    // set a background color
+    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    // Draw each Drawable (AKA each model)
+    for (uint64_t i = 0; i < SRE_Main_Stack->_DRAWABLES_LIST_BUFFLEN; i++)
+    {
+        // bind the VAO
+        glBindVertexArray(SRE_Main_Stack->drawable_list[i]->_VAO[SRE_Main_Stack->drawable_list[i]->_SELECTED_BUFFER]);
+        // bind the Shader Program
+        glUseProgram(SRE_Main_Stack->drawable_list[i]->_ShaderProgram[SRE_Main_Stack->drawable_list[i]->_SELECTED_SHADER]);
+        // bind GL_TEXTURE0 to our brick wall texture
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, SRE_Main_Stack->drawable_list[i]->_Texture[SRE_Main_Stack->drawable_list[i]->_SELECTED_TEXTURE]);
+        // update 3D matrices
+        SRE_ring1_Update_Transformation_Matrix(SRE_Main_Stack->drawable_list[i]->mvpLoc, *SRE_Main_Stack->drawable_list[i], *SRE_Main_Stack->camera, *SRE_Main_Stack->projection_context);
+
+
+        // draw the selected element
+        glDrawElements(GL_TRIANGLES, SRE_Main_Stack->drawable_list[i]->_INDICES_BUFFLEN, GL_UNSIGNED_INT, 0);
+    }
+
+    // Render changes
+    SDL_GL_SwapWindow(SRE_Main_Stack->mainWindow);
+
+    // framerate control
+    elapsed = SDL_GetTicks() - frameStart;// delta( Tstart, Tfinish )
+    if (elapsed < targetFrameTime)
+    {
+        SDL_Delay(targetFrameTime - elapsed);
+    }
+
+    return 0;
+}

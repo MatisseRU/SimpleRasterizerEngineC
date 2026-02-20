@@ -133,4 +133,6 @@ void SRE_ring1_Create_Full_Drawable(const char *shaders_path, const char *shape_
 
 void SRE_ring1_Delete_Full_Drawable(SRE_ring1_Model *drawable);
 
+int SRE_ring1_Default_Draw_Update(uint16_t framerate);
+
 #endif

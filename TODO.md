@@ -29,12 +29,12 @@ A model can be exported to different formats which are all necessary when rebuil
 
 # Where do we go now ? (TODO):
 ## "Hard / abstract stuff", low-level programming and core engineering:
-- Ring1-ify the creation AND manipulation of a model (vertices, indices, shader programs, shader uniforms, 3D matrix, positions, )
 - Change "absolute positioning" to "global offset positioning" (since floats' precision shrink as the number gets bigger and bigger, the (0,0,0) will "move" with the controlled character, AKA the camera), the offset should be a int64 since coordinates might be huge at some point.
 - Ring1-ify frame updating (drawing and shader program selection, FPS counter, etc...)
 
 ## "Affordable stuff", easy programming, affordable for junior-devs:
 - Correct memory leaks !!!! (oups...), tips: `valgrind --leak-check=full --show-leak-kinds=all --verbose --log-file=valgrind_log.txt ./build/example.out` ; to sort logs: `grep -A 10 -B 2 "SRE_" valgrind_log.txt | grep -A 12 -B 2 "definitely lost\|indirectly lost\|possibly lost" > valgrind_log_sorted.txt` **IA is a pretty good ally, Mistral AI doesn't bother you with prompt size limits, you can copy/paste the whole code concerned by leaks and it will show you the most critical ones**.
+- Add correct pointer cast to free() since it takes up a (void*) pointer as input. Since C is flexible with pointers, this is not a real concern for now. It's mainly about code property.
 - Add / reformat function descriptions using a standard C convention.
 - Remove function descriptions from .c files since they are already specified in the right .h one.
 

@@ -30,7 +30,7 @@ A model can be exported to different formats which are all necessary when rebuil
 # Where do we go now ? (TODO):
 ## "Hard / abstract stuff", low-level programming and core engineering:
 - Change "absolute positioning" to "global offset positioning" (since floats' precision shrink as the number gets bigger and bigger, the (0,0,0) will "move" with the controlled character, AKA the camera), the offset should be a int64 since coordinates might be huge at some point.
-- Ring1-ify frame updating (drawing and shader program selection, FPS counter, etc...)
+- Write the scene editor !! :D
 
 ## "Affordable stuff", easy programming, affordable for junior-devs:
 - Correct memory leaks !!!! (oups...), tips: `valgrind --leak-check=full --show-leak-kinds=all --verbose --log-file=valgrind_log.txt ./build/example.out` ; to sort logs: `grep -A 10 -B 2 "SRE_" valgrind_log.txt | grep -A 12 -B 2 "definitely lost\|indirectly lost\|possibly lost" > valgrind_log_sorted.txt` **IA is a pretty good ally, Mistral AI doesn't bother you with prompt size limits, you can copy/paste the whole code concerned by leaks and it will show you the most critical ones**.

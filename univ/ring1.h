@@ -12,9 +12,7 @@
 #define _SRE_MAX_GL_TEXTURES 8
 #define _SRE_MAX_GL_SHADERS 8
 #define _SRE_MAX_GL_UNIFORMS 8
-
-extern SDL_Window *SRE_ring1_mainWindow;
-extern SDL_GLContext SRE_ring1_mainWindowGL_ctx;
+#define _SRE_MAX_OBJs_LIST 1024
 
 
 
@@ -87,7 +85,20 @@ typedef struct SRE_ring1_Model
     void (*update)(struct SRE_ring1_Model *self);
 } SRE_ring1_Model;
 
+/* Global Variable structure, main stack */
+typedef struct SRE_Globals
+{
+    int w, h;
+    SDL_Window *mainWindow;
+    SDL_GLContext mainWindowGL_ctx;
+    SRE_ring1_Projection *projection_context;
+    SRE_ring1_View *camera;
 
+    SRE_ring1_Model *model_list[_SRE_MAX_OBJs_LIST];
+
+} SRE_Globals;
+
+extern SRE_Globals *SRE_Main_Stack;
 
 
 /* methods */

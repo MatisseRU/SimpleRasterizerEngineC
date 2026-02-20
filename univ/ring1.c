@@ -2,8 +2,8 @@
 
 /* GLOBAL VARIABLES */
 
-SDL_Window *SRE_ring1_mainWindow;
-SDL_GLContext SRE_ring1_mainWindowGL_ctx;
+SRE_Globals *SRE_Main_Stack;
+
 
 
 
@@ -11,6 +11,14 @@ SDL_GLContext SRE_ring1_mainWindowGL_ctx;
 
 int SRE_ring1_Init_Engine(int depth_size, int multi_samples, int w_window, int h_window)
 {
+    // Initialize the Main Stack of Engine
+    SRE_Main_Stack = malloc(sizeof(SRE_Globals));
+    if (SRE_Main_Stack == NULL)
+    {
+        SRE_Log("Failed to allocate memory for SRE_Main_Stack\n", NULL);
+        return -1;
+    }
+
     // SDL
 
     if (!SDL_Init(SDL_INIT_VIDEO))
@@ -104,8 +112,8 @@ int SRE_ring1_Init_Engine(int depth_size, int multi_samples, int w_window, int h
 
     // SDL
     
-    SRE_ring1_mainWindow = SDL_CreateWindow("Main Test", w_window, h_window, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);// default 800x600
-    if (SRE_ring1_mainWindow == NULL)
+    SRE_Main_Stack->mainWindow = SDL_CreateWindow("Main Test", w_window, h_window, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);// default 800x600
+    if (SRE_Main_Stack->mainWindow == NULL)
     {
         SRE_Log("Failed at SDL_CreateWindow:\n", NULL);
         SRE_Log(SDL_GetError(), NULL);
@@ -118,13 +126,13 @@ int SRE_ring1_Init_Engine(int depth_size, int multi_samples, int w_window, int h
     
     // OPENGL
 
-    SRE_ring1_mainWindowGL_ctx = SDL_GL_CreateContext(SRE_ring1_mainWindow);
-    if (SRE_ring1_mainWindowGL_ctx == NULL)
+    SRE_Main_Stack->mainWindowGL_ctx = SDL_GL_CreateContext(SRE_Main_Stack->mainWindow);
+    if (SRE_Main_Stack->mainWindowGL_ctx == NULL)
     {
         SRE_Log("Failed at SDL_GL_CreateContext:\n", NULL);
         SRE_Log(SDL_GetError(), NULL);
         SRE_Log("\n", NULL);
-        SDL_DestroyWindow(SRE_ring1_mainWindow);
+        SDL_DestroyWindow(SRE_Main_Stack->mainWindow);
         SDL_Quit();
         return -1;
     }
@@ -184,7 +192,7 @@ void SRE_ring1_Exit_Engine()
     // delete model objects
 
     // destroy the window
-    SDL_DestroyWindow(SRE_ring1_mainWindow);
+    SDL_DestroyWindow(SRE_Main_Stack->mainWindow);
     SDL_Quit();
 
     return;

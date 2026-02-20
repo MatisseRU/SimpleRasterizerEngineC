@@ -22,26 +22,26 @@ int main(int argc, char **argv)
     /* RECTANGLE */
 
     // create a 3D Projection matrix object
-    SRE_ring1_Projection *projection_context = SRE_ring1_Create_Projection_Object(45.0f, 800.0f, 600.0f, 0.1f, 100.0f);
+    SRE_Main_Stack->projection_context = SRE_ring1_Create_Projection_Object(45.0f, 800.0f, 600.0f, 0.1f, 100.0f);
 
     // create a 3D Camera matrix object
-    SRE_ring1_View *camera = SRE_ring1_Create_View_Object(0.0f, 0.0f, 3.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+    SRE_Main_Stack->camera = SRE_ring1_Create_View_Object(0.0f, 0.0f, 3.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
 
     // create a 3D Tetrahedron matrix object
-    SRE_ring1_Model *cube_model = SRE_ring1_Create_Model_Object(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
+    SRE_Main_Stack->model_list[0] = SRE_ring1_Create_Model_Object(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
 
     // create the default shader program
-    SRE_ring1_Append_Model_Shader(cube_model, "./WADs/complete_models/3D_cube");
-    cube_model->_SELECTED_SHADER = 0;
+    SRE_ring1_Append_Model_Shader(SRE_Main_Stack->model_list[0], "./WADs/complete_models/3D_cube");
+    SRE_Main_Stack->model_list[0]->_SELECTED_SHADER = 0;
 
     // create the 3D cube's shape (vertices, indices, GLBuffers, etc...)
-    SRE_ring1_Append_Model_VerticesAndIndices(cube_model, "./WADs/complete_models/3D_cube");
+    SRE_ring1_Append_Model_VerticesAndIndices(SRE_Main_Stack->model_list[0], "./WADs/complete_models/3D_cube");
 
     // create the brick wall texture
-    SRE_ring0_CreateTextureFromFile("./WADs/textures/wall.jpg", cube_model->_Texture[cube_model->_SELECTED_TEXTURE]);
+    SRE_ring0_CreateTextureFromFile("./WADs/textures/wall.jpg", SRE_Main_Stack->model_list[0]->_Texture[SRE_Main_Stack->model_list[0]->_SELECTED_TEXTURE]);
 
     // get the uMVP uniform from our default OpenGL 3D Shader Program
-    cube_model->mvpLoc = SRE_ring0_Get_Uniform_TransformationMatrix_From_ShaderProgram(cube_model->_ShaderProgram[cube_model->_SELECTED_SHADER]);
+    SRE_Main_Stack->model_list[0]->mvpLoc = SRE_ring0_Get_Uniform_TransformationMatrix_From_ShaderProgram(SRE_Main_Stack->model_list[0]->_ShaderProgram[SRE_Main_Stack->model_list[0]->_SELECTED_SHADER]);
 
 
 
@@ -50,12 +50,12 @@ int main(int argc, char **argv)
     int w, h;
 
     // bind the VAO
-    glBindVertexArray(cube_model->_VAO[cube_model->_SELECTED_BUFFER]);
+    glBindVertexArray(SRE_Main_Stack->model_list[0]->_VAO[SRE_Main_Stack->model_list[0]->_SELECTED_BUFFER]);
     // bind the Shader Program
-    glUseProgram(cube_model->_ShaderProgram[cube_model->_SELECTED_SHADER]);
+    glUseProgram(SRE_Main_Stack->model_list[0]->_ShaderProgram[SRE_Main_Stack->model_list[0]->_SELECTED_SHADER]);
     // bind GL_TEXTURE0 to our brick wall texture
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, cube_model->_Texture[cube_model->_SELECTED_TEXTURE]);
+    glBindTexture(GL_TEXTURE_2D, SRE_Main_Stack->model_list[0]->_Texture[SRE_Main_Stack->model_list[0]->_SELECTED_TEXTURE]);
 
 
     SDL_Event ev;
@@ -79,53 +79,53 @@ int main(int argc, char **argv)
 
 
         // Update Viewport
-        SDL_GetWindowSize(SRE_ring1_mainWindow, &w, &h);
+        SDL_GetWindowSize(SRE_Main_Stack->mainWindow, &w, &h);
         glViewport(0, 0, w, h);
-        projection_context->widthScreen = (float)w;
-        projection_context->hightScreen = (float)h;
-        projection_context->update(projection_context);
+        SRE_Main_Stack->projection_context->widthScreen = (float)w;
+        SRE_Main_Stack->projection_context->hightScreen = (float)h;
+        SRE_Main_Stack->projection_context->update(SRE_Main_Stack->projection_context);
 
 
         // check camera movements
         if (keys[SDL_SCANCODE_W])
         {
             // cam forward (zoom in)
-            camera->zPos -= 0.05f;
-            camera->zLook -= 0.05f;
-            camera->update(camera);
+            SRE_Main_Stack->camera->zPos -= 0.05f;
+            SRE_Main_Stack->camera->zLook -= 0.05f;
+            SRE_Main_Stack->camera->update(SRE_Main_Stack->camera);
         }
         if (keys[SDL_SCANCODE_S])
         {
             // cam backward (zoom out)
-            camera->zPos += 0.05f;
-            camera->zLook += 0.05f;
-            camera->update(camera);
+            SRE_Main_Stack->camera->zPos += 0.05f;
+            SRE_Main_Stack->camera->zLook += 0.05f;
+            SRE_Main_Stack->camera->update(SRE_Main_Stack->camera);
         }
 
         // check model movements
         if (keys[SDL_SCANCODE_LEFT])
         {
-            cube_model->yRotAngle += 1.0f;
-            cube_model->update(cube_model);
+            SRE_Main_Stack->model_list[0]->yRotAngle += 1.0f;
+            SRE_Main_Stack->model_list[0]->update(SRE_Main_Stack->model_list[0]);
         }
         if (keys[SDL_SCANCODE_RIGHT])
         {
-            cube_model->yRotAngle -= 1.0f;
-            cube_model->update(cube_model);
+            SRE_Main_Stack->model_list[0]->yRotAngle -= 1.0f;
+            SRE_Main_Stack->model_list[0]->update(SRE_Main_Stack->model_list[0]);
         }
         if (keys[SDL_SCANCODE_UP])
         {
-            cube_model->xRotAngle += 1.0f;
-            cube_model->update(cube_model);
+            SRE_Main_Stack->model_list[0]->xRotAngle += 1.0f;
+            SRE_Main_Stack->model_list[0]->update(SRE_Main_Stack->model_list[0]);
         }
         if (keys[SDL_SCANCODE_DOWN])
         {
-            cube_model->xRotAngle -= 1.0f;
-            cube_model->update(cube_model);
+            SRE_Main_Stack->model_list[0]->xRotAngle -= 1.0f;
+            SRE_Main_Stack->model_list[0]->update(SRE_Main_Stack->model_list[0]);
         }
 
         // update the whole 3D matrix
-        SRE_ring1_Update_Transformation_Matrix(cube_model->mvpLoc, *cube_model, *camera, *projection_context);
+        SRE_ring1_Update_Transformation_Matrix(SRE_Main_Stack->model_list[0]->mvpLoc, *SRE_Main_Stack->model_list[0], *SRE_Main_Stack->camera, *SRE_Main_Stack->projection_context);
 
 
         // OPENGL: set a grey background
@@ -135,10 +135,10 @@ int main(int argc, char **argv)
 
         // DRAW IT
         // OPENGL: draw a shape
-        glDrawElements(GL_TRIANGLES, cube_model->_INDICES_BUFFLEN, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, SRE_Main_Stack->model_list[0]->_INDICES_BUFFLEN, GL_UNSIGNED_INT, 0);
 
         // SDL: render it.
-        SDL_GL_SwapWindow(SRE_ring1_mainWindow);
+        SDL_GL_SwapWindow(SRE_Main_Stack->mainWindow);
 
 
         // SDL: wait
@@ -155,9 +155,9 @@ int main(int argc, char **argv)
 
 
     // Proper exit...
-    SRE_ring1_Destroy_Model_Object(cube_model);
-    free(camera);
-    free(projection_context);
+    SRE_ring1_Destroy_Model_Object(SRE_Main_Stack->model_list[0]);
+    free(SRE_Main_Stack->camera);
+    free(SRE_Main_Stack->projection_context);
     SRE_ring1_Exit_Engine();
     return 0;
 }

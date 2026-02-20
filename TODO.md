@@ -34,7 +34,7 @@ A model can be exported to different formats which are all necessary when rebuil
 - Ring1-ify frame updating (drawing and shader program selection, FPS counter, etc...)
 
 ## "Affordable stuff", easy programming, affordable for junior-devs:
-- Correct memory leaks !!!! (oups...), tips: `valgrind --leak-check=full --show-leak-kinds=all --verbose --log-file=valgrind_log.txt ./build/example.out` ; to sort logs: `grep -A 10 -B 2 "SRE_" valgrind_log.txt | grep -A 12 -B 2 "definitely lost\|indirectly lost\|possibly lost" > valgrind_log_sorted.txt`
+- Correct memory leaks !!!! (oups...), tips: `valgrind --leak-check=full --show-leak-kinds=all --verbose --log-file=valgrind_log.txt ./build/example.out` ; to sort logs: `grep -A 10 -B 2 "SRE_" valgrind_log.txt | grep -A 12 -B 2 "definitely lost\|indirectly lost\|possibly lost" > valgrind_log_sorted.txt` **IA is a pretty good ally, Mistral AI doesn't bother you with prompt size limits, you can copy/paste the whole code concerned by leaks and it will show you the most critical ones**.
 - Add / reformat function descriptions using a standard C convention.
 - Remove function descriptions from .c files since they are already specified in the right .h one.
 

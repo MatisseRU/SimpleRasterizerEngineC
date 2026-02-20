@@ -318,6 +318,9 @@ unsigned int SRE_ring0_3D_CreateShaderProgram_From_File(char *vshaderpath, char 
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
+    free((void*)vertexShaderSource_default);
+    free((void*)fragmentShaderSource_default);
+
     return shaderProgram;
 }
 

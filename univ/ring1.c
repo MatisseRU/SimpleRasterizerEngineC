@@ -226,6 +226,8 @@ void SRE_ring1_Exit_Engine()
     SDL_DestroyWindow(SRE_Main_Stack->mainWindow);
     SDL_Quit();
 
+    // free Main Stack
+    free((void*)SRE_Main_Stack);
     return;
 }
 

@@ -131,4 +131,6 @@ void SRE_ring1_Append_Model_VerticesAndIndices(SRE_ring1_Model *model, const cha
 
 void SRE_ring1_Create_Full_Drawable(const char *shaders_path, const char *shape_path, const char *texture_path);
 
+void SRE_ring1_Delete_Full_Drawable(SRE_ring1_Model *drawable);
+
 #endif

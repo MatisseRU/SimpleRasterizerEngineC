@@ -194,11 +194,16 @@ int SRE_ring1_Init_Drawing(float fov, float closest_distance, float farthest_dis
 {
     // create a 3D Projection matrix object
     SRE_Main_Stack->projection_context = SRE_ring1_Create_Projection_Object(fov, SRE_Main_Stack->w, SRE_Main_Stack->h, closest_distance, farthest_distance);
-    SRE_Log("Successfully created the 3D projection context", NULL);
+    SRE_Log("Successfully created the 3D projection context\n", NULL);
 
     // create a 3D Camera matrix object
     SRE_Main_Stack->camera = SRE_ring1_Create_View_Object(0.0f, 0.0f, 3.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
-    SRE_Log("Successfully created the camera", NULL);
+    SRE_Log("Successfully created the camera\n", NULL);
+
+    for (uint64_t i = 0; i < _SRE_MAX_OBJs_LIST; i++)
+    {
+        SRE_Main_Stack->drawable_list[i] = NULL;
+    }
 
     SRE_Main_Stack->_DRAWABLES_LIST_BUFFLEN = 0;
 
@@ -481,6 +486,48 @@ void SRE_ring1_Create_Full_Drawable(const char *shaders_path, const char *shape_
     SRE_Main_Stack->_DRAWABLES_LIST_BUFFLEN += 1;
 }
 
+void SRE_ring1_Delete_Full_Drawable(SRE_ring1_Model *drawable)
+{
+    // Log the destroyed model
+    char logbuff[64];
+    SRE_Log("Destroying model... at memory location: ", NULL);
+    sprintf(logbuff, "%p", (void *)drawable);
+    SRE_Log(logbuff, NULL);
+    SRE_Log("\n", NULL);
 
+    SRE_ring1_Destroy_Model_Object(drawable);
+    SRE_Log("Drawable destroyed...\n", NULL);
+
+    // clean up the list of drawables, do no let holes fit in the list
+    SRE_Log("Clearing buffer from this drawable...\n", NULL);
+
+    uint64_t reindexer = 0;
+    for (uint64_t i = 0; i < _SRE_MAX_OBJs_LIST; i++)
+    {
+        if (SRE_Main_Stack->drawable_list[i] == drawable)
+        {
+            // Log that we found the drawable
+            SRE_Log("Found destroyed model at index: ", NULL);
+            sprintf(logbuff, "%lu", i);
+            SRE_Log(logbuff, NULL);
+            SRE_Log("\n", NULL);
+
+            // reindexing process
+            SRE_Log("Beginning reindexation process (if required)\n", NULL);
+            for (reindexer = i+1; SRE_Main_Stack->drawable_list[reindexer] != NULL; reindexer++)
+            {
+                SRE_Main_Stack->drawable_list[reindexer-1] = SRE_Main_Stack->drawable_list[reindexer];
+                
+                SRE_Log("Reindexed drawable : ", NULL);
+                sprintf(logbuff, "%p", (void *)SRE_Main_Stack->drawable_list[reindexer]);
+                SRE_Log(logbuff, NULL);
+                SRE_Log("\n", NULL);
+            }
+            break;
+        }
+    }
+    SRE_Main_Stack->_DRAWABLES_LIST_BUFFLEN -= 1;
+    SRE_Log("Fully deleted drawable properly.\n", NULL);
+}
 
 

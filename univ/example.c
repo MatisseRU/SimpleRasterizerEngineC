@@ -26,8 +26,9 @@ int main(int argc, char **argv)
     
     SRE_ring1_Create_Full_Drawable("./WADs/complete_models/3D_cube", "./WADs/complete_models/3D_cube", "./WADs/textures/wall.jpg");
 
+    SRE_ring1_Delete_Full_Drawable(SRE_Main_Stack->drawable_list[0]);
 
-
+    SRE_ring1_Create_Full_Drawable("./WADs/complete_models/3D_cube", "./WADs/complete_models/3D_cube", "./WADs/textures/wall.jpg");
 
     // MAIN LOOP
 

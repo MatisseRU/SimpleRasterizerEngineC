@@ -17,9 +17,9 @@ build using:
 `make example`
 
 if you need to pass extra flags to the compiler (path to an include folder) build using:  
-`make example EXTRA_CFLAGS="-I../OpenGL/cglm/include/"`
+`make example EXTRA_CFLAGS=<FLAGS YOU NEED TO PASS TO THE COMPILER>`
 
-build'n run:  
+build'n run example:  
 `make example EXTRA_CFLAGS="-I../OpenGL/cglm/include/" && ./build/example.out`
 
 

@@ -63,96 +63,55 @@ int main(int argc, char **argv)
         // Forward movement (W)
         if (keys[SDL_SCANCODE_W])
         {
-            // cam forward
-            // Calculate direction vector from camera position to look point (normalized)
-            float dirX = SRE_Main_Stack->camera->xLook - SRE_Main_Stack->camera->xPos;
-            float dirY = SRE_Main_Stack->camera->yLook - SRE_Main_Stack->camera->yPos;
-            float dirZ = SRE_Main_Stack->camera->zLook - SRE_Main_Stack->camera->zPos;
-
-            // Move camera along the direction vector
-            SRE_Main_Stack->camera->xPos += dirX * 0.05f * sprint;
-            SRE_Main_Stack->camera->yPos += dirY * 0.05f * sprint;
-            SRE_Main_Stack->camera->zPos += dirZ * 0.05f * sprint;
-            SRE_Main_Stack->camera->update(SRE_Main_Stack->camera);
+            SRE_ring2_MoveCamera(CAM_MOVE_FORWARD, 0.05f * sprint);
         }
 
         // Backward movement (S)
         if (keys[SDL_SCANCODE_S])
         {
-            // cam backward
-            float dirX = SRE_Main_Stack->camera->xPos - SRE_Main_Stack->camera->xLook;
-            float dirY = SRE_Main_Stack->camera->yPos - SRE_Main_Stack->camera->yLook;
-            float dirZ = SRE_Main_Stack->camera->zPos - SRE_Main_Stack->camera->zLook;
-
-            SRE_Main_Stack->camera->xPos += dirX * 0.05f * sprint;
-            SRE_Main_Stack->camera->yPos += dirY * 0.05f * sprint;
-            SRE_Main_Stack->camera->zPos += dirZ * 0.05f * sprint;
-            SRE_Main_Stack->camera->update(SRE_Main_Stack->camera);
+            SRE_ring2_MoveCamera(CAM_MOVE_BACKWARD, 0.05f * sprint);
         }
 
         // Left movement (A)
         if (keys[SDL_SCANCODE_A])
         {
-            // cam left
-            // Calculate the right vector (perpendicular to the direction vector in the XZ plane)
-            float dirX = SRE_Main_Stack->camera->zLook - SRE_Main_Stack->camera->zPos;
-            float dirZ = -(SRE_Main_Stack->camera->xLook - SRE_Main_Stack->camera->xPos);
-
-            SRE_Main_Stack->camera->xPos += dirX * 0.05f * sprint;
-            SRE_Main_Stack->camera->zPos += dirZ * 0.05f * sprint;
-            SRE_Main_Stack->camera->update(SRE_Main_Stack->camera);
+            SRE_ring2_MoveCamera(CAM_MOVE_LEFT, 0.05f * sprint);
         }
 
         // Right movement (D)
         if (keys[SDL_SCANCODE_D])
         {
-            // cam right
-            float dirX = -(SRE_Main_Stack->camera->zLook - SRE_Main_Stack->camera->zPos);
-            float dirZ = SRE_Main_Stack->camera->xLook - SRE_Main_Stack->camera->xPos;
-
-            SRE_Main_Stack->camera->xPos += dirX * 0.05f * sprint;
-            SRE_Main_Stack->camera->zPos += dirZ * 0.05f * sprint;
-            SRE_Main_Stack->camera->update(SRE_Main_Stack->camera);
+            SRE_ring2_MoveCamera(CAM_MOVE_RIGHT, 0.05f * sprint);
         }
 
-        // Up movement (LSHIFT)
+        // DOWN movement (LSHIFT)
         if (keys[SDL_SCANCODE_LSHIFT])
         {
-            // cam up
-            SRE_Main_Stack->camera->yPos -= 0.05f * sprint;
-            SRE_Main_Stack->camera->yLook -= 0.05f * sprint;
-            SRE_Main_Stack->camera->update(SRE_Main_Stack->camera);
+            SRE_ring2_MoveCamera(CAM_MOVE_DOWN, 0.05f * sprint);
         }
 
-        // Down movement (SPACE)
+        // UP movement (SPACE)
         if (keys[SDL_SCANCODE_SPACE])
         {
-            // cam down
-            SRE_Main_Stack->camera->yPos += 0.05f * sprint;
-            SRE_Main_Stack->camera->yLook += 0.05f * sprint;
-            SRE_Main_Stack->camera->update(SRE_Main_Stack->camera);
+            SRE_ring2_MoveCamera(CAM_MOVE_UP, 0.05f * sprint);
         }
 
         // check camera rotations
         if (keys[SDL_SCANCODE_LEFT])
         {
-            SRE_Main_Stack->camera->yRotAngle -= 1.0f;
-            SRE_Main_Stack->camera->update(SRE_Main_Stack->camera);
+            SRE_ring2_RotateCamera(CAM_ROTATE_LEFT, 1.0f);
         }
         if (keys[SDL_SCANCODE_RIGHT])
         {
-            SRE_Main_Stack->camera->yRotAngle += 1.0f;
-            SRE_Main_Stack->camera->update(SRE_Main_Stack->camera);
+            SRE_ring2_RotateCamera(CAM_ROTATE_RIGHT, 1.0f);
         }
         if (keys[SDL_SCANCODE_UP])
         {
-            SRE_Main_Stack->camera->xRotAngle += 1.0f;
-            SRE_Main_Stack->camera->update(SRE_Main_Stack->camera);
+            SRE_ring2_RotateCamera(CAM_ROTATE_UP, 1.0f);
         }
         if (keys[SDL_SCANCODE_DOWN])
         {
-            SRE_Main_Stack->camera->xRotAngle -= 1.0f;
-            SRE_Main_Stack->camera->update(SRE_Main_Stack->camera);
+            SRE_ring2_RotateCamera(CAM_ROTATE_DOWN, 1.0f);
         }
 
 

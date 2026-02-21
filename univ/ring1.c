@@ -445,8 +445,8 @@ void SRE_ring1_Append_Model_VerticesAndIndices(SRE_ring1_Model *model, const cha
 
     strncpy(vert_path, shape_path, 8186);
     strncpy(indi_path, shape_path, 8186);
-    strcat(vert_path, ".ver");
-    strcat(indi_path, ".ind");
+    strcat(vert_path, ".vtx");
+    strcat(indi_path, ".idx");
 
     // load vertices to the model
     model->_VERTICES = SRE_ring0_read_floats_from_file(vert_path, (size_t *)&model->_VERTICES_BUFFLEN);

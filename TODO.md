@@ -18,11 +18,11 @@ The only exception to this rule is the SRE_Log() logger.
 
 ### File Extensions:
 A model can be exported to different formats which are all necessary when rebuilding it in the engine:
-- **.vert**: vertices' coordinates that define the model.
-- **.indi**: indices, AKA, orders of the model's vertex in which it must be build.
-- **.tex**: texture (any image used as a 2D texture)
-- **.vshader**: vertex shader (OpenGL code) used for the model.
-- **.fshader**: fragment shader (OpenGL code) used for the model.
+- **.vtx**: vertices' coordinates that define the model.
+- **.idx**: indices, AKA, orders of the model's vertex in which it must be build.
+- **.tex** or any image format: texture (any image used as a 2D texture)
+- **.vert**: vertex shader (OpenGL code) used for the model.
+- **.frag**: fragment shader (OpenGL code) used for the model.
 - **.unils**: shaders' OpenGL uniform name list, used to properly load every uniform used to draw / calculate using Hardware Acceleration provided by OpenGL.
 
 

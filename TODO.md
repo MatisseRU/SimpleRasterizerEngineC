@@ -38,6 +38,7 @@ A model can be exported to different formats which are all necessary when rebuil
 - Add correct pointer cast to free() since it takes up a (void*) pointer as input. Since C is flexible with pointers, this is not a real concern for now. It's mainly about code property.
 - Add / reformat function descriptions using a standard C convention.
 - Remove function descriptions from .c files since they are already specified in the right .h one.
+- Find a way to make update() methods look like real OOP instead of passing the structure in argument.
 
 ## "Easy stuff", designing and testing:
 - Test the available code (from example.c, see Build section in the README) with different textures, vertices and indices.

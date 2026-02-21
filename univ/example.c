@@ -23,6 +23,11 @@ int main(int argc, char **argv)
 
     // 3D cube with brick wall texture
     SRE_ring1_Create_Full_Drawable("./WADs/complete_models/3D_cube", "./WADs/complete_models/3D_cube", "./WADs/textures/wall.jpg");
+    SRE_ring1_Create_Full_Drawable("./WADs/complete_models/3D_cube", "./WADs/complete_models/3D_cube", "./WADs/textures/wall.jpg");
+    SRE_Main_Stack->drawable_list[0]->xPos = -2.0f;
+    SRE_Main_Stack->drawable_list[0]->update(SRE_Main_Stack->drawable_list[0]);
+    SRE_Main_Stack->drawable_list[1]->xPos = 2.0f;
+    SRE_Main_Stack->drawable_list[1]->update(SRE_Main_Stack->drawable_list[1]);
 
 
 
@@ -30,6 +35,9 @@ int main(int argc, char **argv)
 
     SDL_Event ev;
     const bool *keys = SDL_GetKeyboardState(NULL);
+
+    // amplifier (sprint camera)
+    float sprint = 1.0f;
 
     uint8_t run = 1;
     while (run)
@@ -43,41 +51,76 @@ int main(int argc, char **argv)
         }
 
         // check camera movements
+        if (keys[SDL_SCANCODE_LCTRL])
+        {
+            sprint = 2.0f; // sprint
+        }else
+        {
+            sprint = 1.0f;
+        }
         if (keys[SDL_SCANCODE_W])
         {
-            // cam forward (zoom in)
-            SRE_Main_Stack->camera->zPos -= 0.05f;
-            SRE_Main_Stack->camera->zLook -= 0.05f;
+            // cam forward
+            SRE_Main_Stack->camera->zPos -= 0.05f * sprint;
+            SRE_Main_Stack->camera->zLook -= 0.05f * sprint;
             SRE_Main_Stack->camera->update(SRE_Main_Stack->camera);
         }
         if (keys[SDL_SCANCODE_S])
         {
-            // cam backward (zoom out)
-            SRE_Main_Stack->camera->zPos += 0.05f;
-            SRE_Main_Stack->camera->zLook += 0.05f;
+            // cam backward
+            SRE_Main_Stack->camera->zPos += 0.05f * sprint;
+            SRE_Main_Stack->camera->zLook += 0.05f * sprint;
+            SRE_Main_Stack->camera->update(SRE_Main_Stack->camera);
+        }
+        if (keys[SDL_SCANCODE_A])
+        {
+            // cam left
+            SRE_Main_Stack->camera->xPos -= 0.05f * sprint;
+            SRE_Main_Stack->camera->xLook -= 0.05f * sprint;
+            SRE_Main_Stack->camera->update(SRE_Main_Stack->camera);
+        }
+        if (keys[SDL_SCANCODE_D])
+        {
+            // cam right
+            SRE_Main_Stack->camera->xPos += 0.05f * sprint;
+            SRE_Main_Stack->camera->xLook += 0.05f * sprint;
+            SRE_Main_Stack->camera->update(SRE_Main_Stack->camera);
+        }
+        if (keys[SDL_SCANCODE_LSHIFT])
+        {
+            // cam up
+            SRE_Main_Stack->camera->yPos -= 0.05f * sprint;
+            SRE_Main_Stack->camera->yLook -= 0.05f * sprint;
+            SRE_Main_Stack->camera->update(SRE_Main_Stack->camera);
+        }
+        if (keys[SDL_SCANCODE_SPACE])
+        {
+            // cam down
+            SRE_Main_Stack->camera->yPos += 0.05f * sprint;
+            SRE_Main_Stack->camera->yLook += 0.05f * sprint;
             SRE_Main_Stack->camera->update(SRE_Main_Stack->camera);
         }
 
-        // check model movements
+        // check camera rotations
         if (keys[SDL_SCANCODE_LEFT])
         {
-            SRE_Main_Stack->drawable_list[0]->yRotAngle += 1.0f;
-            SRE_Main_Stack->drawable_list[0]->update(SRE_Main_Stack->drawable_list[0]);
+            SRE_Main_Stack->camera->yRotAngle -= 1.0f;
+            SRE_Main_Stack->camera->update(SRE_Main_Stack->camera);
         }
         if (keys[SDL_SCANCODE_RIGHT])
         {
-            SRE_Main_Stack->drawable_list[0]->yRotAngle -= 1.0f;
-            SRE_Main_Stack->drawable_list[0]->update(SRE_Main_Stack->drawable_list[0]);
+            SRE_Main_Stack->camera->yRotAngle += 1.0f;
+            SRE_Main_Stack->camera->update(SRE_Main_Stack->camera);
         }
         if (keys[SDL_SCANCODE_UP])
         {
-            SRE_Main_Stack->drawable_list[0]->xRotAngle += 1.0f;
-            SRE_Main_Stack->drawable_list[0]->update(SRE_Main_Stack->drawable_list[0]);
+            SRE_Main_Stack->camera->xRotAngle += 1.0f;
+            SRE_Main_Stack->camera->update(SRE_Main_Stack->camera);
         }
         if (keys[SDL_SCANCODE_DOWN])
         {
-            SRE_Main_Stack->drawable_list[0]->xRotAngle -= 1.0f;
-            SRE_Main_Stack->drawable_list[0]->update(SRE_Main_Stack->drawable_list[0]);
+            SRE_Main_Stack->camera->xRotAngle -= 1.0f;
+            SRE_Main_Stack->camera->update(SRE_Main_Stack->camera);
         }
 
         SRE_ring1_Default_Draw_Update(500);

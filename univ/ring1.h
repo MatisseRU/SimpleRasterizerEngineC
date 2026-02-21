@@ -13,6 +13,9 @@
 #define _SRE_MAX_GL_SHADERS 8
 #define _SRE_MAX_GL_UNIFORMS 8
 #define _SRE_MAX_OBJs_LIST 1024
+#ifndef M_PI
+#define M_PI 3.14159265358979323846f
+#endif
 
 
 
@@ -41,6 +44,7 @@ typedef struct SRE_ring1_View
 {
     float xPos, yPos, zPos;
     float xLook, yLook, zLook;
+    float xRotAngle, yRotAngle, zRotAngle;
     float xTop, yTop, zTop;
 
     mat4 view_matrix;
@@ -119,7 +123,7 @@ void _SRE_ring1_Model_do_Place_At(SRE_ring1_Model *self);
 /* Constructors */
 
 SRE_ring1_Projection *SRE_ring1_Create_Projection_Object(float fov_degrees, float width_screen, float hight_screen, float close_distance, float far_distance);
-SRE_ring1_View *SRE_ring1_Create_View_Object(float x_pos, float y_pos, float z_pos, float x_look, float y_look, float z_look, float x_top, float y_top, float z_top);
+SRE_ring1_View *SRE_ring1_Create_View_Object(float x_pos, float y_pos, float z_pos, float x_angle, float y_angle, float x_top, float y_top, float z_top);
 SRE_ring1_Model *SRE_ring1_Create_Model_Object(float x_pos, float y_pos, float z_pos, float x_rotation_angle_degrees, float y_rotation_angle_degrees, float z_rotation_angle_degrees, float x_scale, float y_scale, float z_scale);
 
 void SRE_ring1_Destroy_Model_Object(SRE_ring1_Model *model);

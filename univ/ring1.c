@@ -197,7 +197,7 @@ int SRE_ring1_Init_Drawing(float fov, float closest_distance, float farthest_dis
     SRE_Log("Successfully created the 3D projection context\n", NULL);
 
     // create a 3D Camera matrix object
-    SRE_Main_Stack->camera = SRE_ring1_Create_View_Object(0.0f, 0.0f, 3.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+    SRE_Main_Stack->camera = SRE_ring1_Create_View_Object(0.0f, 0.0f, 3.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
     SRE_Log("Successfully created the camera\n", NULL);
 
     for (uint64_t i = 0; i < _SRE_MAX_OBJs_LIST; i++)
@@ -248,6 +248,15 @@ void _SRE_ring1_Projection_do_Set_Settings(SRE_ring1_Projection *self)
 // place the camera by updating the View matrix
 void _SRE_ring1_View_do_Place_At(SRE_ring1_View *self)
 {
+    // Convert angles from degrees to radians
+    float yawRad   = self->yRotAngle * (M_PI / 180.0f);  // Y-axis rotation (yaw)
+    float pitchRad = self->xRotAngle * (M_PI / 180.0f); // X-axis rotation (pitch)
+
+    // Calculate the look direction on a unit sphere
+    self->xLook = self->xPos + sinf(yawRad) * cosf(pitchRad);
+    self->yLook = self->yPos + sinf(pitchRad);
+    self->zLook = self->zPos + -cosf(yawRad) * cosf(pitchRad);
+
     glm_lookat((vec3){self->xPos, self->yPos, self->zPos},
                (vec3){self->xLook, self->yLook, self->zLook},
                (vec3){self->xTop, self->yTop, self->zTop},
@@ -287,7 +296,7 @@ SRE_ring1_Projection *SRE_ring1_Create_Projection_Object(float fov_degrees, floa
 
     return projection;
 }
-SRE_ring1_View *SRE_ring1_Create_View_Object(float x_pos, float y_pos, float z_pos, float x_look, float y_look, float z_look, float x_top, float y_top, float z_top)
+SRE_ring1_View *SRE_ring1_Create_View_Object(float x_pos, float y_pos, float z_pos, float x_angle, float y_angle, float x_top, float y_top, float z_top)
 {
     SRE_ring1_View* view = malloc(sizeof(SRE_ring1_View));
     if(view == NULL)
@@ -301,9 +310,9 @@ SRE_ring1_View *SRE_ring1_Create_View_Object(float x_pos, float y_pos, float z_p
     view->xPos = x_pos;
     view->yPos = y_pos;
     view->zPos = z_pos;
-    view->xLook = x_look;
-    view->yLook = y_look;
-    view->zLook = z_look;
+    view->xRotAngle = x_angle;
+    view->yRotAngle = y_angle;
+    view->zLook = 1;
     view->xTop = x_top;
     view->yTop = y_top;
     view->zTop = z_top;

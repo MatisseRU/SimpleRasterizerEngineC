@@ -33,8 +33,10 @@ int main(int argc, char **argv)
     }
 
 
-
-
+    // big (0;0;0) center-cross drawable
+    SRE_ring1_Create_Full_Drawable("./WADs/scene_editor/models/central_cross","./WADs/scene_editor/models/central_cross_x","./WADs/scene_editor/textures/Red.jpg");
+    SRE_ring1_Create_Full_Drawable("./WADs/scene_editor/models/central_cross", "./WADs/scene_editor/models/central_cross_y", "./WADs/scene_editor/textures/Green.jpeg");
+    SRE_ring1_Create_Full_Drawable("./WADs/scene_editor/models/central_cross", "./WADs/scene_editor/models/central_cross_z", "./WADs/scene_editor/textures/Blue.jpeg");
 
 
     // MAIN LOOP

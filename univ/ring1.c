@@ -475,7 +475,7 @@ void SRE_ring1_Append_Model_VerticesAndIndices(SRE_ring1_Model *model, const cha
     SRE_ring0_SaveModel_TO_GLBuffers(model->_VAO[model->_SELECTED_BUFFER], model->_VBO[model->_SELECTED_BUFFER], model->_EBO[model->_SELECTED_BUFFER], model->_VERTICES, model->_INDICES, sizeof(float) * model->_VERTICES_BUFFLEN, model->_VERTICES_BUFFLEN, sizeof(float) * model->_INDICES_BUFFLEN, model->_INDICES_BUFFLEN, 0, 3, GL_FLOAT, 5 * sizeof(float), (void*)0, 1, 2, GL_FLOAT, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 }
 
-void SRE_ring1_Create_Full_Drawable(const char *shaders_path, const char *shape_path, const char *texture_path)
+uint64_t SRE_ring1_Create_Full_Drawable(const char *shaders_path, const char *shape_path, const char *texture_path)
 {
     // create a 3D Cube matrix object
     SRE_Main_Stack->drawable_list[SRE_Main_Stack->_DRAWABLES_LIST_BUFFLEN] = SRE_ring1_Create_Model_Object(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
@@ -495,6 +495,8 @@ void SRE_ring1_Create_Full_Drawable(const char *shaders_path, const char *shape_
 
     // increment size counter
     SRE_Main_Stack->_DRAWABLES_LIST_BUFFLEN += 1;
+
+    return SRE_Main_Stack->_DRAWABLES_LIST_BUFFLEN - 1;
 }
 
 void SRE_ring1_Delete_Full_Drawable(SRE_ring1_Model *drawable)

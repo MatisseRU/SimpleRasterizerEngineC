@@ -133,7 +133,7 @@ void SRE_ring1_Append_Model_Shader(SRE_ring1_Model *model, const char *shader_pa
 // Append vertices and indices, also setup correctly the VAO and EBO (vertices and indices must be in the same directory !!). DO NOT SPECIFY FILE EXTENTIONS !!
 void SRE_ring1_Append_Model_VerticesAndIndices(SRE_ring1_Model *model, const char *shape_path);
 
-void SRE_ring1_Create_Full_Drawable(const char *shaders_path, const char *shape_path, const char *texture_path);
+uint64_t SRE_ring1_Create_Full_Drawable(const char *shaders_path, const char *shape_path, const char *texture_path);
 
 void SRE_ring1_Delete_Full_Drawable(SRE_ring1_Model *drawable);
 

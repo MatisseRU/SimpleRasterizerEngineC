@@ -39,6 +39,7 @@ A model can be exported to different formats which are all necessary when rebuil
 - Add / reformat function descriptions using a standard C convention.
 - Remove function descriptions from .c files since they are already specified in the right .h one.
 - Find a way to make update() methods look like real OOP instead of passing the structure in argument.
+- Correct / add error handling in the ring 0 file readers, also in ring 1 model/drawable construction.
 
 ## "Easy stuff", designing and testing:
 - Test the available code (from example.c, see Build section in the README) with different textures, vertices and indices.

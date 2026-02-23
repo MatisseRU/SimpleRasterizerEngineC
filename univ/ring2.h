@@ -33,7 +33,7 @@ typedef struct SRE_ring2_Mesh
 
 /* ring 2 methods */
 
-void _SRE_ring2_Mesh_do_Place_At(SRE_ring1_Model *self);
+void _SRE_ring2_Mesh_do_Place_At(SRE_ring2_Mesh *self);
 
 
 

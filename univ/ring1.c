@@ -200,7 +200,7 @@ int SRE_ring1_Init_Drawing(float fov, float closest_distance, float farthest_dis
     SRE_Log("Successfully created the 3D projection context\n", NULL);
 
     // create a 3D Camera matrix object
-    SRE_Main_Stack->camera = SRE_ring1_Create_View_Object(0.0f, 0.0f, 3.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+    SRE_Main_Stack->camera = SRE_ring1_Create_View_Object(1.0f, 1.0f, 1.5f, -30.0f, -30.0f, 0.0f, 1.0f, 0.0f);
     SRE_Log("Successfully created the camera\n", NULL);
 
     for (uint64_t i = 0; i < _SRE_MAX_OBJs_LIST; i++)

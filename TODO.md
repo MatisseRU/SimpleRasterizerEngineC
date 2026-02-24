@@ -31,8 +31,9 @@ A model can be exported to different formats which are all necessary when rebuil
 ## "Hard / abstract stuff", low-level programming and core engineering:
 - Change "absolute positioning" to "global offset positioning" (since floats' precision shrink as the number gets bigger and bigger, the (0,0,0) will "move" with the controlled character, AKA the camera), the offset should be a int64 since coordinates might be huge at some point.
 - Write the scene editor !! :D
-- Multi-thread the Frame Updater call, that way we'll be capable of handling inputs at the desired rate without affecting 3D framerate.
-- Ligthning handling (ring 2).
+- Multi-thread the Frame Updater calls, that way we'll be capable of handling inputs at the desired rate without affecting 3D framerate. It should be somehow a wrapped thing with many functions, idk, maybe using a struct... ?
+- Implement mesh creation and handling, also make a ring 2 Draw call with meshes, a replacent of the ring 1 one if we want to draw complete meshes.
+- Ligthning handling (ring 2) with uniforms.
 - Movement and collisions => handled with float buffer composed of (x;y;z) force vector in the model's structure (`float forces[_SRE_MAX_FORCE_VECTORS_PER_MODEL][3]`) a global force multiplier will take place in the mesh's structure (ring 2).
 - Implement a slider which determines optimisation repartition (CPU <> GPU) (ring 2).
 - Implement optimisation algorithms, both for CPU side and GPU side. The slider will make the end-user able to choose wether to use more CPU over GPU if the engine runs on low-end hardware.

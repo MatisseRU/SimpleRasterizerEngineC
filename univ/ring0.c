@@ -130,8 +130,8 @@ unsigned int SRE_ring0_3D_CreateDefaultCornerColoredShaderProgram(void)
     const char* vertexShaderSource_default =
     "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
-    "layout (location = 1) in vec3 aColor;\n"
-    "out vec3 vertexColor;\n"
+    "layout (location = 1) in vec4 aColor;\n"
+    "out vec4 vertexColor;\n"
     "uniform mat4 uMVP;\n"
     "void main()\n"
     "{\n"
@@ -141,11 +141,11 @@ unsigned int SRE_ring0_3D_CreateDefaultCornerColoredShaderProgram(void)
 
     const char* fragmentShaderSource_default =
     "#version 330 core\n"
-    "in vec3 vertexColor;\n"
+    "in vec4 vertexColor;\n"
     "out vec4 FragColor;\n"
     "void main()\n"
     "{\n"
-    "   FragColor = vec4(vertexColor, 1.0);\n"
+    "   FragColor = vertexColor;\n"
     "}\n\0";
 
 
@@ -291,6 +291,7 @@ unsigned int SRE_ring0_3D_CreateDefaultTexturedShaderProgram(void)
 }
 unsigned int SRE_ring0_3D_CreateShaderProgram_From_File(char *vshaderpath, char *fshaderpath)
 {
+    SRE_Log("[ring 0] Starting to Create Shader Program From File...\n", NULL);
     const char* vertexShaderSource_default = SRE_ring0_read_char_to_buffer(vshaderpath);
     const char* fragmentShaderSource_default = SRE_ring0_read_char_to_buffer(fshaderpath);
 
@@ -322,12 +323,14 @@ unsigned int SRE_ring0_3D_CreateShaderProgram_From_File(char *vshaderpath, char 
     free((void*)fragmentShaderSource_default);
 
     return shaderProgram;
+    SRE_Log("[ring 0] Exiting Create Shader Program From File.\n", NULL);
 }
 
 /* OpenGL VAO / VBO / EBO manipulations */
 
 int SRE_ring0_SaveModel_TO_GLBuffers(GLuint VAO, GLuint VBO, GLuint EBO, float *vertices, unsigned int *indices, GLsizeiptr vert_size, uint16_t vert_nbr, GLsizeiptr ind_size, uint16_t ind_nbr, unsigned int vert_pos_layout_in_shader, int vert_pos_size_per_point, GLenum vert_pos_data_type, GLsizei vert_pos_stride, const void *vert_pos_pointer, unsigned int vert_color_layout_in_shader, int vert_color_size_per_point, GLenum vert_color_data_type, GLsizei vert_color_stride, const void *vert_color_pointer)
 {
+    SRE_Log("[ring 0] Starting to save model to GL Buffers...\n", NULL);
     // Bind VAO and VBO and EBO
     // VAO
     glBindVertexArray(VAO);
@@ -388,6 +391,7 @@ int SRE_ring0_SaveModel_TO_GLBuffers(GLuint VAO, GLuint VBO, GLuint EBO, float *
     // EBO
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
+    SRE_Log("[ring 0] Exiting save model to GL Buffers.\n", NULL);
     return 0;
 }
 
@@ -396,6 +400,7 @@ int SRE_ring0_SaveModel_TO_GLBuffers(GLuint VAO, GLuint VBO, GLuint EBO, float *
 
 int SRE_ring0_CreateTextureFromFile(const char *texture_file_path, GLuint gl_texture_id)
 {
+    SRE_Log("[ring 0] Creating texture from file...\n", NULL);
     // Load texture
     int width, height, nrChannels;
     stbi_set_flip_vertically_on_load(1);
@@ -448,7 +453,7 @@ int SRE_ring0_CreateTextureFromFile(const char *texture_file_path, GLuint gl_tex
     // Clean unbinding
     glBindTexture(GL_TEXTURE_2D, 0);
 
-
+    SRE_Log("[ring 0] Exiting texture from file.\n", NULL);
     return 0;
 }
 
@@ -458,6 +463,7 @@ int SRE_ring0_CreateTextureFromFile(const char *texture_file_path, GLuint gl_tex
 
 float* SRE_ring0_read_floats_from_file(const char* path, size_t* outCount)
 {
+    SRE_Log("[ring 0] Started to read floats from file...\n", NULL);
     FILE* f = fopen(path, "r");
     if (!f)
     {
@@ -499,10 +505,12 @@ float* SRE_ring0_read_floats_from_file(const char* path, size_t* outCount)
 
     fclose(f);
     *outCount = count;
+    SRE_Log("[ring 0] Exiting read floats from file.\n", NULL);
     return buffer;
 }
 int SRE_ring0_write_floats_to_file(const char* path, const float* data, size_t count)
 {
+    SRE_Log("[ring 0] Started to write floats to file...\n", NULL);
     FILE* f = fopen(path, "w");
     if (!f)
     {
@@ -525,10 +533,12 @@ int SRE_ring0_write_floats_to_file(const char* path, const float* data, size_t c
     }
 
     fclose(f);
+    SRE_Log("[ring 0] Exiting write floats to file.\n", NULL);
     return 0;
 }
 unsigned int* SRE_ring0_read_uints_from_file(const char* path, size_t* outCount)
 {
+    SRE_Log("[ring 0] Started to read unsigned ints from file...\n", NULL);
     FILE* f = fopen(path, "r");
     if (!f)
     {
@@ -570,10 +580,12 @@ unsigned int* SRE_ring0_read_uints_from_file(const char* path, size_t* outCount)
 
     fclose(f);
     *outCount = count;
+    SRE_Log("[ring 0] Exiting read unsigned ints from file.\n", NULL);
     return buffer;
 }
 int SRE_ring0_write_uints_to_file(const char* path, const unsigned int* data, size_t count)
 {
+    SRE_Log("[ring 0] Started to write unsigned ints to file...\n", NULL);
     FILE* f = fopen(path, "w");
     if (!f)
     {
@@ -594,10 +606,12 @@ int SRE_ring0_write_uints_to_file(const char* path, const unsigned int* data, si
     }
 
     fclose(f);
+    SRE_Log("[ring 0] Exiting write unsigned ints to file.\n", NULL);
     return 0;
 }
 char *SRE_ring0_read_char_to_buffer(const char* path)
 {
+    SRE_Log("[ring 0] Started to read chars from file...\n", NULL);
     FILE* f = fopen(path, "rb");
     if (!f) {
         perror("Failed to open file");
@@ -625,6 +639,7 @@ char *SRE_ring0_read_char_to_buffer(const char* path)
     buffer[read] = '\0';
     fclose(f);
 
+    SRE_Log("[ring 0] Exiting read chars from file.\n", NULL);
     return buffer;
 }
 

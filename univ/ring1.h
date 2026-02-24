@@ -69,6 +69,7 @@ typedef struct SRE_ring1_Model
     float *_VERTICES;
     uint16_t _INDICES_BUFFLEN;
     unsigned int *_INDICES;
+    uint8_t transparency; // bool 1 or 0, used if alpha canal used
 
     uint32_t _BUFFER_BUFFLEN;
     uint32_t _SELECTED_BUFFER;
@@ -134,6 +135,8 @@ void SRE_ring1_Append_Model_Shader(SRE_ring1_Model *model, const char *shader_pa
 void SRE_ring1_Append_Model_VerticesAndIndices(SRE_ring1_Model *model, const char *shape_path);
 
 uint64_t SRE_ring1_Create_Full_Drawable(const char *shaders_path, const char *shape_path, const char *texture_path);
+
+uint64_t SRE_ring1_Create_Full_Drawable_Floor(const char *shape_path);
 
 void SRE_ring1_Delete_Full_Drawable(SRE_ring1_Model *drawable);
 

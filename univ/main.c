@@ -34,10 +34,14 @@ int main(int argc, char **argv)
 
 
     // big (0;0;0) center-cross drawable
+    SRE_Log("[MAIN] Creating big cross at (0 ; 0 ; 0)...", NULL);
     SRE_ring1_Create_Full_Drawable("./WADs/scene_editor/models/central_cross","./WADs/scene_editor/models/central_cross_x","./WADs/scene_editor/textures/Red.jpg");
     SRE_ring1_Create_Full_Drawable("./WADs/scene_editor/models/central_cross", "./WADs/scene_editor/models/central_cross_y", "./WADs/scene_editor/textures/Green.jpeg");
     SRE_ring1_Create_Full_Drawable("./WADs/scene_editor/models/central_cross", "./WADs/scene_editor/models/central_cross_z", "./WADs/scene_editor/textures/Blue.jpeg");
+    SRE_Log("[MAIN] Created big cross at (0 ; 0 ; 0).", NULL);
 
+    // floor
+    SRE_ring1_Create_Full_Drawable_Floor("/home/lenovo/Documents/Info/GameEngine/SimpleRasterizerEngineC/WADs/scene_editor/models/x_floor");
 
     // MAIN LOOP
 
@@ -45,7 +49,7 @@ int main(int argc, char **argv)
     const bool *keys = SDL_GetKeyboardState(NULL);
 
     // amplifier (sprint camera)
-    float sprint = 2.0f;
+    float sprint = 4.0f;
 
     uint8_t run = 1;
     while (run)
@@ -107,19 +111,19 @@ int main(int argc, char **argv)
         // check camera rotations
         if (keys[SDL_SCANCODE_LEFT])
         {
-            SRE_ring2_RotateCamera(CAM_ROTATE_LEFT, 0.25f * sprint);
+            SRE_ring2_RotateCamera(CAM_ROTATE_LEFT, 0.25f * sprint * 2);
         }
         if (keys[SDL_SCANCODE_RIGHT])
         {
-            SRE_ring2_RotateCamera(CAM_ROTATE_RIGHT, 0.25f * sprint);
+            SRE_ring2_RotateCamera(CAM_ROTATE_RIGHT, 0.25f * sprint * 2);
         }
         if (keys[SDL_SCANCODE_UP])
         {
-            SRE_ring2_RotateCamera(CAM_ROTATE_UP, 0.25f * sprint);
+            SRE_ring2_RotateCamera(CAM_ROTATE_UP, 0.25f * sprint * 2);
         }
         if (keys[SDL_SCANCODE_DOWN])
         {
-            SRE_ring2_RotateCamera(CAM_ROTATE_DOWN, 0.25f * sprint);
+            SRE_ring2_RotateCamera(CAM_ROTATE_DOWN, 0.25f * sprint * 2);
         }
 
 

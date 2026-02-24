@@ -96,3 +96,24 @@ void SRE_ring2_RotateCamera(const uint8_t cam_rotation_direction, float units)
     }
 }
 
+void SRE_ring2_Create_Full_Grey_Floor(void)
+{
+    SRE_Log("[ring 1] Starting to Create Full Grey Floor...\n", NULL);
+    // create a 3D Cube matrix object
+    SRE_Main_Stack->drawable_list[SRE_Main_Stack->_DRAWABLES_LIST_BUFFLEN] = SRE_ring1_Create_Model_Object(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
+
+    // create the default shader program
+    SRE_ring1_Append_Model_Shader(SRE_Main_Stack->drawable_list[SRE_Main_Stack->_DRAWABLES_LIST_BUFFLEN], "./WADs/scene_editor/models/x_floor");
+    SRE_Main_Stack->drawable_list[SRE_Main_Stack->_DRAWABLES_LIST_BUFFLEN]->_SELECTED_SHADER = 0;
+
+    // create the 3D cube's shape (vertices, indices, GLBuffers, etc...)
+    SRE_ring1_Append_Model_VerticesAndIndices(SRE_Main_Stack->drawable_list[SRE_Main_Stack->_DRAWABLES_LIST_BUFFLEN], "./WADs/scene_editor/models/x_floor");
+
+    // get the uMVP uniform from our default OpenGL 3D Shader Program
+    SRE_Main_Stack->drawable_list[SRE_Main_Stack->_DRAWABLES_LIST_BUFFLEN]->mvpLoc = SRE_ring0_Get_Uniform_TransformationMatrix_From_ShaderProgram(SRE_Main_Stack->drawable_list[SRE_Main_Stack->_DRAWABLES_LIST_BUFFLEN]->_ShaderProgram[SRE_Main_Stack->drawable_list[SRE_Main_Stack->_DRAWABLES_LIST_BUFFLEN]->_SELECTED_SHADER]);
+
+    // increment size counter
+    SRE_Main_Stack->_DRAWABLES_LIST_BUFFLEN += 1;
+
+    SRE_Log("[ring 1] Exiting Create Full Grey Floor.\n", NULL);
+}

@@ -11,6 +11,7 @@ SRE_Globals *SRE_Main_Stack;
 
 int SRE_ring1_Init_Engine(int depth_size, int multi_samples, int w_window, int h_window)
 {
+    SRE_Log("[ring 1] Starting to Init Engine...\n", NULL);
     // Initialize the Main Stack of Engine
     SRE_Main_Stack = malloc(sizeof(SRE_Globals));
     if (SRE_Main_Stack == NULL)
@@ -188,10 +189,12 @@ int SRE_ring1_Init_Engine(int depth_size, int multi_samples, int w_window, int h
 
     glViewport(0, 0, 800, 600);
 
+    SRE_Log("[ring 1] Exiting Init Engine.\n", NULL);
     return 0;
 }
 int SRE_ring1_Init_Drawing(float fov, float closest_distance, float farthest_distance)
 {
+    SRE_Log("[ring 1] Starting to Init Drawing...\n", NULL);
     // create a 3D Projection matrix object
     SRE_Main_Stack->projection_context = SRE_ring1_Create_Projection_Object(fov, SRE_Main_Stack->w, SRE_Main_Stack->h, closest_distance, farthest_distance);
     SRE_Log("Successfully created the 3D projection context\n", NULL);
@@ -207,10 +210,12 @@ int SRE_ring1_Init_Drawing(float fov, float closest_distance, float farthest_dis
 
     SRE_Main_Stack->_DRAWABLES_LIST_BUFFLEN = 0;
 
+    SRE_Log("[ring 1] Exiting Init Engine.\n", NULL);
     return 0;
 }
 void SRE_ring1_Exit_Engine()
 {
+    SRE_Log("[ring 1] Exiting Engine...\n", NULL);
     // delete model objects
     for (uint64_t i = 0; i < SRE_Main_Stack->_DRAWABLES_LIST_BUFFLEN; i++)
     {
@@ -228,6 +233,8 @@ void SRE_ring1_Exit_Engine()
 
     // free Main Stack
     free((void*)SRE_Main_Stack);
+
+    SRE_Log("[ring 1] Goodbye !\n", NULL);
     return;
 }
 
@@ -278,6 +285,7 @@ void _SRE_ring1_Model_do_Place_At(SRE_ring1_Model *self)
 
 SRE_ring1_Projection *SRE_ring1_Create_Projection_Object(float fov_degrees, float width_screen, float hight_screen, float close_distance, float far_distance)
 {
+    SRE_Log("[ring 1] Starting to Create Projection Object...\n", NULL);
     SRE_ring1_Projection* projection = malloc(sizeof(SRE_ring1_Projection));
     if(projection == NULL)
     {
@@ -294,10 +302,12 @@ SRE_ring1_Projection *SRE_ring1_Create_Projection_Object(float fov_degrees, floa
     projection->far = far_distance;
     projection->update(projection);
 
+    SRE_Log("[ring 1] Exiting Create Projection Object.\n", NULL);
     return projection;
 }
 SRE_ring1_View *SRE_ring1_Create_View_Object(float x_pos, float y_pos, float z_pos, float x_angle, float y_angle, float x_top, float y_top, float z_top)
 {
+    SRE_Log("[ring 1] Starting to Create View Object...\n", NULL);
     SRE_ring1_View* view = malloc(sizeof(SRE_ring1_View));
     if(view == NULL)
     {
@@ -318,10 +328,12 @@ SRE_ring1_View *SRE_ring1_Create_View_Object(float x_pos, float y_pos, float z_p
     view->zTop = z_top;
     view->update(view);
 
+    SRE_Log("[ring 1] Exiting Create View Object.\n", NULL);
     return view;
 }
 SRE_ring1_Model *SRE_ring1_Create_Model_Object(float x_pos, float y_pos, float z_pos, float x_rotation_angle_degrees, float y_rotation_angle_degrees, float z_rotation_angle_degrees, float x_scale, float y_scale, float z_scale)
 {
+    SRE_Log("[ring 1] Starting to Create Model Object...\n", NULL);
     SRE_ring1_Model* model = malloc(sizeof(SRE_ring1_Model));
     if(model == NULL)
     {
@@ -358,11 +370,13 @@ SRE_ring1_Model *SRE_ring1_Create_Model_Object(float x_pos, float y_pos, float z
     model->_SELECTED_TEXTURE = 0;
     glGenTextures(_SRE_MAX_GL_TEXTURES, model->_Texture);
 
+    SRE_Log("[ring 1] Exiting Create Model Object.\n", NULL);
     return model;
 }
 
 void SRE_ring1_Destroy_Model_Object(SRE_ring1_Model *model)
 {
+    SRE_Log("[ring 1] Starting to Destroy Model Object...\n", NULL);
     // delete VAO / VBO / EBO
     glDeleteVertexArrays(_SRE_MAX_GL_BUFFERS, model->_VAO);
     glDeleteBuffers(_SRE_MAX_GL_BUFFERS, model->_VBO);
@@ -383,10 +397,13 @@ void SRE_ring1_Destroy_Model_Object(SRE_ring1_Model *model)
 
     // delete the model class.
     free(model);
+
+    SRE_Log("[ring 1] Exiting Destroy Model Object.\n", NULL);
 }
 
 void SRE_ring1_Append_Model_Shader(SRE_ring1_Model *model, const char *shader_path)
 {
+    SRE_Log("[ring 1] Starting to Append Model Shader...\n", NULL);
     // default shaders
     if (strcmp(shader_path, "DefaultShaderProgram") == 0)
     {
@@ -444,10 +461,12 @@ void SRE_ring1_Append_Model_Shader(SRE_ring1_Model *model, const char *shader_pa
         SRE_Log(temp_buff, NULL);
         SRE_Log(" to a model.\n", NULL);
     }
+    SRE_Log("[ring 1] Exiting Append Model Shader...\n", NULL);
 }
 
 void SRE_ring1_Append_Model_VerticesAndIndices(SRE_ring1_Model *model, const char *shape_path)
 {
+    SRE_Log("[ring 1] Starting to Append Model Vertices and Indices...\n", NULL);
 
     char vert_path[8192];
     char indi_path[8192];
@@ -473,10 +492,46 @@ void SRE_ring1_Append_Model_VerticesAndIndices(SRE_ring1_Model *model, const cha
 
     // save vertices and indices to buffers
     SRE_ring0_SaveModel_TO_GLBuffers(model->_VAO[model->_SELECTED_BUFFER], model->_VBO[model->_SELECTED_BUFFER], model->_EBO[model->_SELECTED_BUFFER], model->_VERTICES, model->_INDICES, sizeof(float) * model->_VERTICES_BUFFLEN, model->_VERTICES_BUFFLEN, sizeof(float) * model->_INDICES_BUFFLEN, model->_INDICES_BUFFLEN, 0, 3, GL_FLOAT, 5 * sizeof(float), (void*)0, 1, 2, GL_FLOAT, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+
+    SRE_Log("[ring 1] Exiting Append Model Vertices and Indices.\n", NULL);
+}
+
+void SRE_ring1_Append_Model_VerticesAndIndices_for_3D_corner_colored_shader(SRE_ring1_Model *model, const char *shape_path)
+{
+
+    SRE_Log("[ring 1] Starting to Append Model Vertices and Indices...\n", NULL);
+
+    char vert_path[8192];
+    char indi_path[8192];
+
+    strncpy(vert_path, shape_path, 8186);
+    strncpy(indi_path, shape_path, 8186);
+    strcat(vert_path, ".vtx");
+    strcat(indi_path, ".idx");
+
+    // load vertices to the model
+    model->_VERTICES = SRE_ring0_read_floats_from_file(vert_path, (size_t *)&model->_VERTICES_BUFFLEN);
+    if (model->_VERTICES == NULL)
+    {
+        SRE_Log("Failed to load vertices to model\n", NULL);
+    }
+
+    // load indices to the model
+    model->_INDICES = SRE_ring0_read_uints_from_file(indi_path, (size_t *)&model->_INDICES_BUFFLEN);
+    if (model->_INDICES == NULL)
+    {
+        SRE_Log("Failed to load indices to model\n", NULL);
+    }
+
+    // save vertices and indices to buffers
+    SRE_ring0_SaveModel_TO_GLBuffers(model->_VAO[model->_SELECTED_BUFFER], model->_VBO[model->_SELECTED_BUFFER], model->_EBO[model->_SELECTED_BUFFER], model->_VERTICES, model->_INDICES, sizeof(float) * model->_VERTICES_BUFFLEN, model->_VERTICES_BUFFLEN, sizeof(float) * model->_INDICES_BUFFLEN, model->_INDICES_BUFFLEN, 0, 3, GL_FLOAT, 7 * sizeof(float), (void*)0, 1, 4, GL_FLOAT, 7 * sizeof(float), (void*)(3 * sizeof(float)));
+
+    SRE_Log("[ring 1] Exiting Append Model Vertices and Indices.\n", NULL);
 }
 
 uint64_t SRE_ring1_Create_Full_Drawable(const char *shaders_path, const char *shape_path, const char *texture_path)
 {
+    SRE_Log("[ring 1] Starting to Create Full Drawable...\n", NULL);
     // create a 3D Cube matrix object
     SRE_Main_Stack->drawable_list[SRE_Main_Stack->_DRAWABLES_LIST_BUFFLEN] = SRE_ring1_Create_Model_Object(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
 
@@ -496,11 +551,39 @@ uint64_t SRE_ring1_Create_Full_Drawable(const char *shaders_path, const char *sh
     // increment size counter
     SRE_Main_Stack->_DRAWABLES_LIST_BUFFLEN += 1;
 
+    SRE_Log("[ring 1] Exiting Create Full Drawable.\n", NULL);
+    return SRE_Main_Stack->_DRAWABLES_LIST_BUFFLEN - 1;
+}
+
+uint64_t SRE_ring1_Create_Full_Drawable_Floor(const char *shape_path)
+{
+    SRE_Log("[ring 1] Starting to Create Full Drawable...\n", NULL);
+    // create a 3D Cube matrix object
+    SRE_Main_Stack->drawable_list[SRE_Main_Stack->_DRAWABLES_LIST_BUFFLEN] = SRE_ring1_Create_Model_Object(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
+
+    // create the default shader program
+    SRE_ring1_Append_Model_Shader(SRE_Main_Stack->drawable_list[SRE_Main_Stack->_DRAWABLES_LIST_BUFFLEN], "3D_DefaultCornerColoredShaderProgram");
+    SRE_Main_Stack->drawable_list[SRE_Main_Stack->_DRAWABLES_LIST_BUFFLEN]->_SELECTED_SHADER = 0;
+
+    // create the 3D cube's shape (vertices, indices, GLBuffers, etc...)
+    SRE_ring1_Append_Model_VerticesAndIndices_for_3D_corner_colored_shader(SRE_Main_Stack->drawable_list[SRE_Main_Stack->_DRAWABLES_LIST_BUFFLEN], shape_path);
+
+    // get the uMVP uniform from our default OpenGL 3D Shader Program
+    SRE_Main_Stack->drawable_list[SRE_Main_Stack->_DRAWABLES_LIST_BUFFLEN]->mvpLoc = SRE_ring0_Get_Uniform_TransformationMatrix_From_ShaderProgram(SRE_Main_Stack->drawable_list[SRE_Main_Stack->_DRAWABLES_LIST_BUFFLEN]->_ShaderProgram[SRE_Main_Stack->drawable_list[SRE_Main_Stack->_DRAWABLES_LIST_BUFFLEN]->_SELECTED_SHADER]);
+
+    // set the floor transparent
+    SRE_Main_Stack->drawable_list[SRE_Main_Stack->_DRAWABLES_LIST_BUFFLEN]->transparency = 1;
+
+    // increment size counter
+    SRE_Main_Stack->_DRAWABLES_LIST_BUFFLEN += 1;
+
+    SRE_Log("[ring 1] Exiting Create Full Drawable.\n", NULL);
     return SRE_Main_Stack->_DRAWABLES_LIST_BUFFLEN - 1;
 }
 
 void SRE_ring1_Delete_Full_Drawable(SRE_ring1_Model *drawable)
 {
+    SRE_Log("[ring 1] Starting to Delete Full Drawable...\n", NULL);
     // Log the destroyed model
     char logbuff[64];
     SRE_Log("Destroying model... at memory location: ", NULL);
@@ -541,6 +624,7 @@ void SRE_ring1_Delete_Full_Drawable(SRE_ring1_Model *drawable)
     }
     SRE_Main_Stack->_DRAWABLES_LIST_BUFFLEN -= 1;
     SRE_Log("Fully deleted drawable properly.\n", NULL);
+    SRE_Log("[ring 1] Exiting Delete Full Drawable.\n", NULL);
 }
 
 int SRE_ring1_Default_Draw_Update(uint16_t framerate)
@@ -558,12 +642,23 @@ int SRE_ring1_Default_Draw_Update(uint16_t framerate)
     SRE_Main_Stack->projection_context->update(SRE_Main_Stack->projection_context);
 
     // set a background color
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClearColor(0.55f, 0.6f, 0.62f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Draw each Drawable (AKA each model)
     for (uint64_t i = 0; i < SRE_Main_Stack->_DRAWABLES_LIST_BUFFLEN; i++)
     {
+        // tests if transparency is required
+        if (SRE_Main_Stack->drawable_list[i]->transparency)
+        {
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        }
+        else
+        {
+            glDisable(GL_BLEND);
+        }
+
         // bind the VAO
         glBindVertexArray(SRE_Main_Stack->drawable_list[i]->_VAO[SRE_Main_Stack->drawable_list[i]->_SELECTED_BUFFER]);
         // bind the Shader Program

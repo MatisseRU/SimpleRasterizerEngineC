@@ -41,7 +41,7 @@ int main(int argc, char **argv)
     SRE_Log("[MAIN] Created big cross at (0 ; 0 ; 0).", NULL);
 
     // floor
-    SRE_ring1_Create_Full_Drawable_Floor("/home/lenovo/Documents/Info/GameEngine/SimpleRasterizerEngineC/WADs/scene_editor/models/x_floor");
+    SRE_ring1_Create_Full_Drawable_Floor("./WADs/scene_editor/models/x_floor");
 
     // MAIN LOOP
 

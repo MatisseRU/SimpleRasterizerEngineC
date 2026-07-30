@@ -62,6 +62,11 @@ int main(int argc, char **argv)
             }
         }
 
+        if (keys[SDL_SCANCODE_ESCAPE])
+        {
+            run = 0; // quit with escape
+        }
+
         // check camera movements
         if (keys[SDL_SCANCODE_LCTRL])
         {

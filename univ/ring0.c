@@ -651,17 +651,17 @@ char *SRE_ring0_read_char_to_buffer(const char* path)
 int SRE_Log(const char *in_buffer, FILE *auxiliary_output)
 {
     FILE *logOutput = fopen(SRE_LOG_PATH, "a");
-    fprintf(logOutput, in_buffer);
+    fprintf(logOutput, "%s", in_buffer);
 
     if (auxiliary_output != NULL)
     {
-        fprintf(auxiliary_output, in_buffer);
+        fprintf(auxiliary_output, "%s", in_buffer);
     }
 
     // if we're debugging
     if (SRE_DEBUGGING == 1)
     {
-        fprintf(stderr, in_buffer);
+        fprintf(stderr, "%s", in_buffer);
     }
 
     fclose(logOutput);

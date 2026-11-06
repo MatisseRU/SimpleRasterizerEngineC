@@ -32,6 +32,7 @@ int main(int argc, char **argv)
 
 
     // MAIN LOOP
+    SRE_Log("[MAIN] Entering Main Loop...\n", NULL);
 
     SDL_Event ev;
     const bool *keys = SDL_GetKeyboardState(NULL);

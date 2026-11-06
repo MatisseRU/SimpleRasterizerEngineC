@@ -38,6 +38,12 @@ Please, when you make changes, make 1 commit per file/change.
 
 Do not commit multiple unrelated changes in the same commit:  
 `git add file1.c`  
-`git commit -m "Added feature blabla to read_str_from_file_blablabla() located in file1.c"`
+`git commit -m "[RINGX] Added feature blabla to read_str_from_file_blablabla() located in file1.c"`
+
+You should add:
+- "[RINGX] or [MAIN] or [EXAMPLE] or [DOCS]" at the begining of your commit to specify for which layer of the project you are actually contributing with this commit.
+- First few words should clearly and concisely explain what you did add/modify.
+- Which functions / code sections are concerned by the new changes.
+- Which files are facing modifications.
 
 Also, use English. Even though you're terrible at English speaking/writing, don't worry, I am too :).

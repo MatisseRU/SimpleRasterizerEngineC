@@ -44,6 +44,7 @@ int main(int argc, char **argv)
     SRE_ring1_Create_Full_Drawable_Floor("./WADs/scene_editor/models/x_floor");
 
     // MAIN LOOP
+    SRE_Log("[MAIN] Entering main loop.\n", NULL);
 
     SDL_Event ev;
     const bool *keys = SDL_GetKeyboardState(NULL);

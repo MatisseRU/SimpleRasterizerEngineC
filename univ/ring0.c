@@ -445,6 +445,7 @@ int SRE_ring0_CreateTextureFromFile(const char *texture_file_path, GLuint gl_tex
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     // Format RGB
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, textureLoaded);
     glGenerateMipmap(GL_TEXTURE_2D);
 
